@@ -102,7 +102,7 @@ class Element extends Node
      */
     public function matches(string $selector, bool $strict = false): bool
     {
-        if ( ! $this->node instanceof DOMElement) {
+        if (! $this->node instanceof DOMElement) {
             return false;
         }
 
@@ -110,7 +110,7 @@ class Element extends Node
             return true;
         }
 
-        if ( ! $strict) {
+        if (! $strict) {
             $innerHtml = $this->html();
             $html = "<root>$innerHtml</root>";
 
@@ -125,7 +125,7 @@ class Element extends Node
 
         $segments = Query::getSegments($selector);
 
-        if ( ! array_key_exists('tag', $segments)) {
+        if (! array_key_exists('tag', $segments)) {
             throw new RuntimeException(sprintf('Tag name must be specified in %s', $selector));
         }
 
@@ -193,7 +193,7 @@ class Element extends Node
             $value = (string) $value;
         }
 
-        if ( ! is_string($value)) {
+        if (! is_string($value)) {
             throw new InvalidArgumentException(sprintf('%s expects parameter 2 to be string or null, %s given.', __METHOD__, (is_object($value) ? get_class($value) : gettype($value))));
         }
 
@@ -242,7 +242,7 @@ class Element extends Node
      */
     public function removeAllAttributes(array $preserved = []): self
     {
-        if ( ! $this->node instanceof DOMElement) {
+        if (! $this->node instanceof DOMElement) {
             return $this;
         }
 
@@ -281,9 +281,9 @@ class Element extends Node
      *
      * @return array|null
      */
-    public function attributes(array $names = null): ?array
+    public function attributes(?array $names = null): ?array
     {
-        if ( ! $this->node instanceof DOMElement) {
+        if (! $this->node instanceof DOMElement) {
             return null;
         }
 
@@ -319,7 +319,7 @@ class Element extends Node
             return $this->classAttribute;
         }
 
-        if ( ! $this->isElementNode()) {
+        if (! $this->isElementNode()) {
             throw new LogicException('Class attribute is available only for element nodes.');
         }
 
@@ -339,7 +339,7 @@ class Element extends Node
             return $this->styleAttribute;
         }
 
-        if ( ! $this->isElementNode()) {
+        if (! $this->isElementNode()) {
             throw new LogicException('Style attribute is available only for element nodes.');
         }
 

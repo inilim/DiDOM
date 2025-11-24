@@ -190,7 +190,7 @@ class Document
     {
         $returnArray = true;
 
-        if ( ! is_array($nodes)) {
+        if (! is_array($nodes)) {
             $nodes = [$nodes];
 
             $returnArray = false;
@@ -203,7 +203,7 @@ class Document
                 $node = $node->getNode();
             }
 
-            if ( ! $node instanceof DOMNode) {
+            if (! $node instanceof DOMNode) {
                 throw new InvalidArgumentException(sprintf('Argument 1 passed to %s must be an instance of %s\Element or DOMNode, %s given.', __METHOD__, __NAMESPACE__, (is_object($node) ? get_class($node) : gettype($node))));
             }
 
@@ -251,9 +251,9 @@ class Document
      * @throws InvalidArgumentException if parameter 4 is not an integer or null
      * @throws RuntimeException if the document type is invalid (not Document::TYPE_HTML or Document::TYPE_XML)
      */
-    public function load(string $string, bool $isFile = false, string $type = Document::TYPE_HTML, int $options = null): void
+    public function load(string $string, bool $isFile = false, string $type = Document::TYPE_HTML, ?int $options = null): void
     {
-        if ( ! in_array(strtolower($type), [Document::TYPE_HTML, Document::TYPE_XML], true)) {
+        if (! in_array(strtolower($type), [Document::TYPE_HTML, Document::TYPE_XML], true)) {
             throw new RuntimeException(sprintf('Document type must be "xml" or "html", %s given.', $type));
         }
 
@@ -406,7 +406,7 @@ class Document
                 $contextNode = $contextNode->getNode();
             }
 
-            if ( ! $contextNode instanceof DOMElement) {
+            if (! $contextNode instanceof DOMElement) {
                 throw new InvalidArgumentException(sprintf('Argument 4 passed to %s must be an instance of %s\Element or DOMElement, %s given.', __METHOD__, __NAMESPACE__, (is_object($contextNode) ? get_class($contextNode) : gettype($contextNode))));
             }
 
@@ -607,7 +607,7 @@ class Document
         if ($document instanceof Document) {
             $element = $document->getElement();
         } else {
-            if ( ! $document instanceof DOMDocument) {
+            if (! $document instanceof DOMDocument) {
                 throw new InvalidArgumentException(sprintf('Argument 1 passed to %s must be an instance of %s or DOMDocument, %s given.', __METHOD__, __CLASS__, (is_object($document) ? get_class($document) : gettype($document))));
             }
 
