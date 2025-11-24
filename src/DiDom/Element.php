@@ -34,7 +34,7 @@ class Element extends Node
      */
     public function __construct($tagName, $value = null, array $attributes = [])
     {
-        if (is_string($tagName)) {
+        if (\is_string($tagName)) {
             $document = new DOMDocument('1.0', 'UTF-8');
 
             $node = $document->createElement($tagName);
@@ -114,7 +114,7 @@ class Element extends Node
             $innerHtml = $this->html();
             $html = "<root>$innerHtml</root>";
 
-            $selector = 'root > ' . trim($selector);
+            $selector = 'root > ' . \trim($selector);
 
             $document = new Document();
 
@@ -125,28 +125,28 @@ class Element extends Node
 
         $segments = Query::getSegments($selector);
 
-        if (! array_key_exists('tag', $segments)) {
-            throw new RuntimeException(sprintf('Tag name must be specified in %s', $selector));
+        if (! \array_key_exists('tag', $segments)) {
+            throw new RuntimeException(\sprintf('Tag name must be specified in %s', $selector));
         }
 
         if ($segments['tag'] !== $this->tagName() && $segments['tag'] !== '*') {
             return false;
         }
 
-        $segments['id'] = array_key_exists('id', $segments) ? $segments['id'] : null;
+        $segments['id'] = \array_key_exists('id', $segments) ? $segments['id'] : null;
 
         if ($segments['id'] !== $this->getAttribute('id')) {
             return false;
         }
 
-        $classes = $this->hasAttribute('class') ? explode(' ', trim($this->getAttribute('class'))) : [];
+        $classes = $this->hasAttribute('class') ? \explode(' ', \trim($this->getAttribute('class'))) : [];
 
-        $segments['classes'] = array_key_exists('classes', $segments) ? $segments['classes'] : [];
+        $segments['classes'] = \array_key_exists('classes', $segments) ? $segments['classes'] : [];
 
-        $diff1 = array_diff($segments['classes'], $classes);
-        $diff2 = array_diff($classes, $segments['classes']);
+        $diff1 = \array_diff($segments['classes'], $classes);
+        $diff2 = \array_diff($classes, $segments['classes']);
 
-        if (count($diff1) > 0 || count($diff2) > 0) {
+        if (\count($diff1) > 0 || \count($diff2) > 0) {
             return false;
         }
 
@@ -154,13 +154,13 @@ class Element extends Node
 
         unset($attributes['id'], $attributes['class']);
 
-        $segments['attributes'] = array_key_exists('attributes', $segments) ? $segments['attributes'] : [];
+        $segments['attributes'] = \array_key_exists('attributes', $segments) ? $segments['attributes'] : [];
 
-        $diff1 = array_diff_assoc($segments['attributes'], $attributes);
-        $diff2 = array_diff_assoc($attributes, $segments['attributes']);
+        $diff1 = \array_diff_assoc($segments['attributes'], $attributes);
+        $diff2 = \array_diff_assoc($attributes, $segments['attributes']);
 
         // if the attributes are not equal
-        if (count($diff1) > 0 || count($diff2) > 0) {
+        if (\count($diff1) > 0 || \count($diff2) > 0) {
             return false;
         }
 
@@ -189,12 +189,16 @@ class Element extends Node
      */
     public function setAttribute(string $name, $value): Element
     {
-        if (is_numeric($value)) {
+        if (\is_numeric($value)) {
             $value = (string) $value;
         }
 
-        if (! is_string($value)) {
-            throw new InvalidArgumentException(sprintf('%s expects parameter 2 to be string or null, %s given.', __METHOD__, (is_object($value) ? get_class($value) : gettype($value))));
+        if (! \is_string($value)) {
+            throw new InvalidArgumentException(\sprintf(
+                '%s expects parameter 2 to be string or null, %s given.',
+                __METHOD__,
+                (\is_object($value) ? \get_class($value) : \gettype($value))
+            ));
         }
 
         $this->node->setAttribute($name, $value);
@@ -247,7 +251,7 @@ class Element extends Node
         }
 
         foreach ($this->attributes() as $name => $value) {
-            if (in_array($name, $preserved, true)) {
+            if (\in_array($name, $preserved, true)) {
                 continue;
             }
 
@@ -300,7 +304,7 @@ class Element extends Node
         $result = [];
 
         foreach ($this->node->attributes as $name => $attribute) {
-            if (in_array($name, $names, true)) {
+            if (\in_array($name, $names, true)) {
                 $result[$name] = $attribute->value;
             }
         }

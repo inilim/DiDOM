@@ -5,3 +5,4 @@ composer.phar
 .DS_Store
 .phpunit.result.cache
 Thumbs.db
+/composer.lock

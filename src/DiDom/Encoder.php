@@ -6,6 +6,8 @@ namespace DiDom;
 
 class Encoder
 {
+    protected static ?bool $condition_1 = null;
+
     /**
      * @param string $string
      * @param string $encoding
@@ -15,15 +17,16 @@ class Encoder
     public static function convertToHtmlEntities(string $string, string $encoding): string
     {
         // handling HTML entities via mbstring is deprecated in PHP 8.2
-        if (function_exists('mb_convert_encoding') && PHP_VERSION_ID < 80200) {
-            return mb_convert_encoding($string, 'HTML-ENTITIES', $encoding);
+        self::$condition_1 ??= \function_exists('mb_convert_encoding') && \PHP_VERSION_ID < 80200;
+        if (self::$condition_1) {
+            return \mb_convert_encoding($string, 'HTML-ENTITIES', $encoding);
         }
 
         if ('UTF-8' !== $encoding) {
-            $string = iconv($encoding, 'UTF-8//IGNORE', $string);
+            $string = \iconv($encoding, 'UTF-8//IGNORE', $string);
         }
 
-        return preg_replace_callback('/[\x80-\xFF]+/', [__CLASS__, 'htmlEncodingCallback'], $string);
+        return \preg_replace_callback('/[\x80-\xFF]+/', [__CLASS__, 'htmlEncodingCallback'], $string);
     }
 
     /**
@@ -36,11 +39,11 @@ class Encoder
         $characterIndex = 1;
         $entities = '';
 
-        $codes = unpack('C*', htmlentities($matches[0], ENT_COMPAT, 'UTF-8'));
+        $codes = \unpack('C*', \htmlentities($matches[0], \ENT_COMPAT, 'UTF-8'));
 
         while (isset($codes[$characterIndex])) {
             if (0x80 > $codes[$characterIndex]) {
-                $entities .= chr($codes[$characterIndex++]);
+                $entities .= \chr($codes[$characterIndex++]);
 
                 continue;
             }
