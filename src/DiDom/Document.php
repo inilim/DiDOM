@@ -122,18 +122,18 @@ class Document
     {
         $segments = Query::getSegments($selector);
 
-        $name = array_key_exists('tag', $segments) ? $segments['tag'] : 'div';
+        $name = \array_key_exists('tag', $segments) ? $segments['tag'] : 'div';
 
-        if (array_key_exists('attributes', $segments)) {
-            $attributes = array_merge($attributes, $segments['attributes']);
+        if (\array_key_exists('attributes', $segments)) {
+            $attributes = \array_merge($attributes, $segments['attributes']);
         }
 
-        if (array_key_exists('id', $segments)) {
+        if (\array_key_exists('id', $segments)) {
             $attributes['id'] = $segments['id'];
         }
 
-        if (array_key_exists('classes', $segments)) {
-            $attributes['class'] = implode(' ', $segments['classes']);
+        if (\array_key_exists('classes', $segments)) {
+            $attributes['class'] = \implode(' ', $segments['classes']);
         }
 
         return $this->createElement($name, $value, $attributes);
@@ -190,7 +190,7 @@ class Document
     {
         $returnArray = true;
 
-        if (! is_array($nodes)) {
+        if (! \is_array($nodes)) {
             $nodes = [$nodes];
 
             $returnArray = false;
@@ -204,7 +204,12 @@ class Document
             }
 
             if (! $node instanceof DOMNode) {
-                throw new InvalidArgumentException(sprintf('Argument 1 passed to %s must be an instance of %s\Element or DOMNode, %s given.', __METHOD__, __NAMESPACE__, (is_object($node) ? get_class($node) : gettype($node))));
+                throw new InvalidArgumentException(\sprintf(
+                    'Argument 1 passed to %s must be an instance of %s\Element or DOMNode, %s given.',
+                    __METHOD__,
+                    __NAMESPACE__,
+                    (\is_object($node) ? \get_class($node) : \gettype($node))
+                ));
             }
 
             Errors::disable();
@@ -217,7 +222,7 @@ class Document
             Errors::restore();
         }
 
-        $result = array_map(function (DOMNode $node) {
+        $result = \array_map(static function (DOMNode $node) {
             return new Element($node);
         }, $result);
 
@@ -253,26 +258,26 @@ class Document
      */
     public function load(string $string, bool $isFile = false, string $type = Document::TYPE_HTML, ?int $options = null): void
     {
-        if (! in_array(strtolower($type), [Document::TYPE_HTML, Document::TYPE_XML], true)) {
-            throw new RuntimeException(sprintf('Document type must be "xml" or "html", %s given.', $type));
+        if (! \in_array(\strtolower($type), [Document::TYPE_HTML, Document::TYPE_XML], true)) {
+            throw new RuntimeException(\sprintf('Document type must be "xml" or "html", %s given.', $type));
         }
 
         if ($options === null) {
             // LIBXML_HTML_NODEFDTD - prevents a default doctype being added when one is not found
-            $options = LIBXML_HTML_NODEFDTD;
+            $options = \LIBXML_HTML_NODEFDTD;
         }
 
-        $string = trim($string);
+        $string = \trim($string);
 
         if ($isFile) {
             $string = $this->loadFile($string);
         }
 
-        if (strtolower($type) === Document::TYPE_HTML) {
+        if (\strtolower($type) === Document::TYPE_HTML) {
             $string = Encoder::convertToHtmlEntities($string, $this->encoding);
         }
 
-        $this->type = strtolower($type);
+        $this->type = \strtolower($type);
 
         Errors::disable();
 
@@ -356,13 +361,13 @@ class Document
     protected function loadFile(string $filename): string
     {
         try {
-            $content = file_get_contents($filename);
+            $content = \file_get_contents($filename);
         } catch (Exception $exception) {
-            throw new RuntimeException(sprintf('Could not load file %s.', $filename));
+            throw new RuntimeException(\sprintf('Could not load file %s.', $filename));
         }
 
         if ($content === false) {
-            throw new RuntimeException(sprintf('Could not load file %s.', $filename));
+            throw new RuntimeException(\sprintf('Could not load file %s.', $filename));
         }
 
         return $content;
@@ -379,7 +384,7 @@ class Document
     public function has(string $expression, string $type = Query::TYPE_CSS): bool
     {
         $expression = Query::compile($expression, $type);
-        $expression = sprintf('count(%s) > 0', $expression);
+        $expression = \sprintf('count(%s) > 0', $expression);
 
         return $this->createXpath()->evaluate($expression);
     }
@@ -407,7 +412,12 @@ class Document
             }
 
             if (! $contextNode instanceof DOMElement) {
-                throw new InvalidArgumentException(sprintf('Argument 4 passed to %s must be an instance of %s\Element or DOMElement, %s given.', __METHOD__, __NAMESPACE__, (is_object($contextNode) ? get_class($contextNode) : gettype($contextNode))));
+                throw new InvalidArgumentException(\sprintf(
+                    'Argument 4 passed to %s must be an instance of %s\Element or DOMElement, %s given.',
+                    __METHOD__,
+                    __NAMESPACE__,
+                    (\is_object($contextNode) ? \get_class($contextNode) : \gettype($contextNode))
+                ));
             }
 
             if ($type === Query::TYPE_CSS) {
@@ -452,11 +462,11 @@ class Document
             $expression = '.' . $expression;
         }
 
-        $expression = sprintf('(%s)[1]', $expression);
+        $expression = \sprintf('(%s)[1]', $expression);
 
         $nodes = $this->find($expression, Query::TYPE_XPATH, false, $contextNode);
 
-        if (count($nodes) === 0) {
+        if (\count($nodes) === 0) {
             return null;
         }
 
@@ -472,7 +482,7 @@ class Document
      */
     protected function wrapNode($node)
     {
-        switch (get_class($node)) {
+        switch (\get_class($node)) {
             case 'DOMElement':
             case 'DOMComment':
             case 'DOMCdataSection':
@@ -485,7 +495,7 @@ class Document
                 return $node->value;
         }
 
-        throw new InvalidArgumentException(sprintf('Unknown node type "%s".', get_class($node)));
+        throw new InvalidArgumentException(\sprintf('Unknown node type "%s".', \get_class($node)));
     }
 
     /**
@@ -515,7 +525,7 @@ class Document
     public function count(string $expression, string $type = Query::TYPE_CSS): int
     {
         $expression = Query::compile($expression, $type);
-        $expression = sprintf('count(%s)', $expression);
+        $expression = \sprintf('count(%s)', $expression);
 
         return (int) $this->createXpath()->evaluate($expression);
     }
@@ -554,7 +564,7 @@ class Document
      */
     public function html(): string
     {
-        return trim($this->document->saveHTML($this->document));
+        return \trim($this->document->saveHTML($this->document));
     }
 
     /**
@@ -566,7 +576,7 @@ class Document
      */
     public function xml(?int $options = 0): string
     {
-        return trim($this->document->saveXML($this->document, $options));
+        return \trim($this->document->saveXML($this->document, $options));
     }
 
     /**
@@ -608,7 +618,12 @@ class Document
             $element = $document->getElement();
         } else {
             if (! $document instanceof DOMDocument) {
-                throw new InvalidArgumentException(sprintf('Argument 1 passed to %s must be an instance of %s or DOMDocument, %s given.', __METHOD__, __CLASS__, (is_object($document) ? get_class($document) : gettype($document))));
+                throw new InvalidArgumentException(\sprintf(
+                    'Argument 1 passed to %s must be an instance of %s or DOMDocument, %s given.',
+                    __METHOD__,
+                    __CLASS__,
+                    (\is_object($document) ? \get_class($document) : \gettype($document))
+                ));
             }
 
             $element = $document->documentElement;
