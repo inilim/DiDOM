@@ -41,7 +41,7 @@ DiDOM - simple and fast HTML parser.
 
 To install DiDOM run the command:
 
-    composer require imangazaliev/didom
+    composer require inilim/didom
 
 ## Quick start
 
