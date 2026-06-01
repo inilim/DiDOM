@@ -32,8 +32,8 @@ class ClassAttribute
      */
     public function __construct(Element $element)
     {
-        if ( ! $element->isElementNode()) {
-            throw new InvalidArgumentException(sprintf('The element must contain DOMElement node.'));
+        if (! $element->isElementNode()) {
+            throw new InvalidArgumentException(\sprintf('The element must contain DOMElement node.'));
         }
 
         $this->element = $element;
@@ -46,7 +46,7 @@ class ClassAttribute
      */
     protected function parseClassAttribute()
     {
-        if ( ! $this->element->hasAttribute('class')) {
+        if (! $this->element->hasAttribute('class')) {
             // possible if class attribute has been removed
             if ($this->classesString !== '') {
                 $this->classesString = '';
@@ -64,7 +64,7 @@ class ClassAttribute
         // save class attribute as is (without trimming)
         $this->classesString = $this->element->getAttribute('class');
 
-        $classesString = trim($this->classesString);
+        $classesString = \trim($this->classesString);
 
         if ($classesString === '') {
             $this->classes = [];
@@ -72,13 +72,13 @@ class ClassAttribute
             return;
         }
 
-        $classes = explode(' ', $classesString);
+        $classes = \explode(' ', $classesString);
 
-        $classes = array_map('trim', $classes);
-        $classes = array_filter($classes);
-        $classes = array_unique($classes);
+        $classes = \array_map('trim', $classes);
+        $classes = \array_filter($classes);
+        $classes = \array_unique($classes);
 
-        $this->classes = array_values($classes);
+        $this->classes = \array_values($classes);
     }
 
     /**
@@ -86,7 +86,7 @@ class ClassAttribute
      */
     protected function updateClassAttribute()
     {
-        $this->classesString = implode(' ', $this->classes);
+        $this->classesString = \implode(' ', $this->classes);
 
         $this->element->setAttribute('class', $this->classesString);
     }
@@ -102,7 +102,7 @@ class ClassAttribute
     {
         $this->parseClassAttribute();
 
-        if (in_array($className, $this->classes, true)) {
+        if (\in_array($className, $this->classes, true)) {
             return $this;
         }
 
@@ -125,11 +125,11 @@ class ClassAttribute
         $this->parseClassAttribute();
 
         foreach ($classNames as $className) {
-            if ( ! is_string($className)) {
-                throw new InvalidArgumentException(sprintf('Class name must be a string, %s given.', (is_object($className) ? get_class($className) : gettype($className))));
+            if (! \is_string($className)) {
+                throw new InvalidArgumentException(\sprintf('Class name must be a string, %s given.', (\is_object($className) ? \get_class($className) : \gettype($className))));
             }
 
-            if (in_array($className, $this->classes, true)) {
+            if (\in_array($className, $this->classes, true)) {
                 continue;
             }
 
@@ -160,7 +160,7 @@ class ClassAttribute
     {
         $this->parseClassAttribute();
 
-        return in_array($className, $this->classes, true);
+        return \in_array($className, $this->classes, true);
     }
 
     /**
@@ -174,7 +174,7 @@ class ClassAttribute
     {
         $this->parseClassAttribute();
 
-        $classIndex = array_search($className, $this->classes);
+        $classIndex = \array_search($className, $this->classes);
 
         if ($classIndex === false) {
             return $this;
@@ -199,11 +199,11 @@ class ClassAttribute
         $this->parseClassAttribute();
 
         foreach ($classNames as $className) {
-            if ( ! is_string($className)) {
-                throw new InvalidArgumentException(sprintf('Class name must be a string, %s given.', (is_object($className) ? get_class($className) : gettype($className))));
+            if (! \is_string($className)) {
+                throw new InvalidArgumentException(\sprintf('Class name must be a string, %s given.', (\is_object($className) ? \get_class($className) : \gettype($className))));
             }
 
-            $classIndex = array_search($className, $this->classes);
+            $classIndex = \array_search($className, $this->classes);
 
             if ($classIndex === false) {
                 continue;
@@ -229,11 +229,11 @@ class ClassAttribute
         $preservedClasses = [];
 
         foreach ($preserved as $className) {
-            if ( ! is_string($className)) {
-                throw new InvalidArgumentException(sprintf('Class name must be a string, %s given.', (is_object($className) ? get_class($className) : gettype($className))));
+            if (! \is_string($className)) {
+                throw new InvalidArgumentException(\sprintf('Class name must be a string, %s given.', (\is_object($className) ? \get_class($className) : \gettype($className))));
             }
 
-            if ( ! in_array($className, $this->classes, true)) {
+            if (! \in_array($className, $this->classes, true)) {
                 continue;
             }
 
