@@ -353,13 +353,43 @@ abstract class Node
         $els = $this->toDocument()->find($expression, $type, $wrapElement);
 
         $count = \count($els);
-        if ($count === 0) {
+        if (0 === $count) {
             throw new \Exception(
                 \sprintf('Expected strictly one element for selector "%s", but found none.', $expression)
             );
         } elseif ($count > 1) {
             throw new \Exception(
                 \sprintf('Expected strictly one element for selector "%s", but found %s.', $expression, $count)
+            );
+        }
+
+        foreach ($els as $el) {
+            return $el;
+        }
+    }
+
+    /**
+     * Searches for a node in the DOM tree for a given XPath expression or CSS selector.
+     *
+     * @param string $expression XPath expression or CSS selector
+     * @param string $type The type of the expression
+     * @param bool $wrapElement Returns array of Element if true, otherwise array of DOMElement
+     *
+     * @return Element|DOMElement|null
+     *
+     * @throws InvalidSelectorException
+     * @throws \Exception if not one elemennts
+     */
+    public function singleOrNot(string $expression, string $type = Query::TYPE_CSS, bool $wrapElement = true)
+    {
+        $els = $this->toDocument()->find($expression, $type, $wrapElement);
+
+        $count = \count($els);
+        if (0 === $count) {
+            return null;
+        } elseif ($count > 1) {
+            throw new \Exception(
+                \sprintf('Expected strictly one or not element for selector "%s", but found %s.', $expression, $count)
             );
         }
 
