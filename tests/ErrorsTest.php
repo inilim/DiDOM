@@ -67,10 +67,10 @@ class ErrorsTest extends TestCase
         $this->assertGreaterThan(0, \count($errors));
 
         $firstError = $errors[0];
-        $this->assertObjectHasProperty('level', $firstError);
-        $this->assertObjectHasProperty('message', $firstError);
-        $this->assertObjectHasProperty('line', $firstError);
-        $this->assertObjectHasProperty('column', $firstError);
+        $this->assertObjectHasAttribute('level', $firstError);
+        $this->assertObjectHasAttribute('message', $firstError);
+        $this->assertObjectHasAttribute('line', $firstError);
+        $this->assertObjectHasAttribute('column', $firstError);
     }
 
     public function testErrorsAreClearedAfterRestore()
