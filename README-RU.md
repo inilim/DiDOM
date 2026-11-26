@@ -23,17 +23,20 @@ DiDOM - простая и быстрая библиотека для парси�
 - [Изменение содержимого](#Изменение-содержимого)
 - [Вывод содержимого](#Вывод-содержимого)
 - [Работа с элементами](#Работа-с-элементами)
-    - [Создание нового элемента](#Создание-нового-элемента)
-    - [Получение названия элемента](#Получение-названия-элемента)
-    - [Получение родительского элемента](#Получение-родительского-элемента)
-    - [Получение соседних элементов](#Получение-соседних-элементов)
-    - [Получение дочерних элементов](#Получение-соседних-элементов)
-    - [Получение документа](#Получение-документа)
-    - [Работа с атрибутами элемента](#Работа-с-атрибутами-элемента)
-    - [Сравнение элементов](#Сравнение-элементов)
-    - [Добавление дочерних элементов](#Добавление-дочерних-элементов)
-    - [Замена элемента](#Замена-элемента)
-    - [Удаление элемента](#Удаление-элемента)
+- [Создание нового элемента](#Создание-нового-элемента)
+- [Получение названия элемента](#Получение-названия-элемента)
+- [Получение родительского элемента](#Получение-родительского-элемента)
+- [Получение соседних элементов](#Получение-соседних-элементов)
+- [Получение дочерних элементов](#Получение-соседних-элементов)
+- [Получение документа](#Получение-документа)
+- [Работа с атрибутами элемента](#Работа-с-атрибутами-элемента)
+- [Работа с классами элемента](#Работа-с-классами-элемента)
+- [Работа со стилями элемента](#Работа-со-стилями-элемента)
+- [Сравнение элементов](#Сравнение-элементов)
+- [Добавление дочерних элементов](#Добавление-дочерних-элементов)
+- [Вставка соседних элементов](#Вставка-соседних-элементов)
+- [Замена элемента](#Замена-элемента)
+- [Удаление элемента](#Удаление-элемента)
 - [Работа с кэшем](#Работа-с-кэшем)
 - [Прочее](#Прочее)
 - [Сравнение с другими парсерами](#Сравнение-с-другими-парсерами)
@@ -42,7 +45,9 @@ DiDOM - простая и быстрая библиотека для парси�
 
 Для установки DiDOM выполните команду:
 
-    composer require imangazaliev/didom
+```
+composer require inilim/didom
+```
 
 ## Быстрый старт
 
@@ -97,9 +102,7 @@ __construct($string = null, $isFile = false, $encoding = 'UTF-8', $type = Docume
 $document = new Document();
 
 $document->loadHtml($html);
-
 $document->loadHtmlFile('page.html');
-
 $document->loadHtmlFile('http://www.example.com/');
 ```
 
@@ -110,9 +113,18 @@ $document->loadHtmlFile('http://www.example.com/');
 ```php
 $document->loadHtml($html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
 $document->loadHtmlFile($url, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-
 $document->loadXml($xml, LIBXML_PARSEHUGE);
 $document->loadXmlFile($url, LIBXML_PARSEHUGE);
+```
+
+##### Проверка статуса загрузки
+
+```php
+$document = new Document($html);
+
+if ($document->loadStatus()) {
+    // документ успешно загружен
+}
 ```
 
 ## Поиск элементов
@@ -146,6 +158,33 @@ $posts = $document->find("//div[contains(@class, 'post')]", Query::TYPE_XPATH);
 Возвращает первый найденный элемент или `null`, если не найдено ни одного элемента.
 
 Принимает те же параметры, что и метод `find()`.
+
+##### Через метод `single()`:
+
+Возвращает элемент, если найден ровно один. Бросает исключение, если не найдено ни одного элемента или найдено больше одного.
+
+```php
+use DiDom\Document;
+
+$document = new Document($html);
+
+// вернет элемент, если найден ровно один
+$title = $document->single('title');
+
+// бросит исключение, если элементов 0 или больше 1
+```
+
+##### Через метод `singleOrNot()`:
+
+Возвращает элемент, если найден ровно один, или `null`, если не найдено ни одного. Бросает исключение, если найдено больше одного.
+
+```php
+$title = $document->singleOrNot('title');
+
+if ($title !== null) {
+    echo $title->text();
+}
+```
 
 ##### Через магический метод `__invoke()`:
 
@@ -211,7 +250,7 @@ echo $document->first('ul')->count('> li');
 
 ## Поиск в элементе
 
-Методы `find()`, `first()`, `xpath()`, `has()`, `count()` доступны также и для элемента.
+Методы `find()`, `first()`, `single()`, `singleOrNot()`, `xpath()`, `has()`, `count()` доступны также и для элемента.
 
 Пример:
 
@@ -312,14 +351,15 @@ $element->setInnerHtml('<a href="#">Foo</a>');
 
 ```php
 $element->setInnerXml(' Foo <span>Bar</span><!-- Baz --><![CDATA[
-    <root>Hello world!</root>
-]]>');
+<root>Hello world!</root>
+]]');
 ```
 
 ### Изменение значения (как простой текст)
 
 ```php
 $element->setValue('Foo');
+
 // будет закодирован в HTML-сущность как при вызове htmlentities()
 $element->setValue('<a href="#">Foo</a>');
 ```
@@ -422,6 +462,7 @@ use DiDom\Element;
 use DOMElement;
 
 $domElement = new DOMElement('span', 'Hello');
+
 $element = new Element($domElement);
 ```
 
@@ -474,9 +515,9 @@ $element = $document->createElementBySelector('div.block', 'Foo', [
 
 ```php
 $element = Element::createBySelector('div.block', 'Foo', [
-     'id' => '#content',
-     'class' => '.container',
- ]);
+    'id' => '#content',
+    'class' => '.container',
+]);
 ```
 
 ## Получение названия элемента
@@ -608,16 +649,19 @@ var_dump($document->is($document2));
 #### Создание/изменение атрибута
 
 ##### Через метод `setAttribute`:
+
 ```php
 $element->setAttribute('name', 'username');
 ```
 
 ##### Через метод `attr`:
+
 ```php
 $element->attr('name', 'username');
 ```
 
 ##### Через магический метод `__set`:
+
 ```php
 $element->name = 'username';
 ```
@@ -625,16 +669,19 @@ $element->name = 'username';
 #### Получение значения атрибута
 
 ##### Через метод `getAttribute`:
+
 ```php
 $username = $element->getAttribute('value');
 ```
 
 ##### Через метод `attr`:
+
 ```php
 $username = $element->attr('value');
 ```
 
 ##### Через магический метод `__get`:
+
 ```php
 $username = $element->name;
 ```
@@ -644,6 +691,7 @@ $username = $element->name;
 #### Проверка наличия атрибута
 
 ##### Через метод `hasAttribute`:
+
 ```php
 if ($element->hasAttribute('name')) {
     // код
@@ -651,6 +699,7 @@ if ($element->hasAttribute('name')) {
 ```
 
 ##### Через магический метод `__isset`:
+
 ```php
 if (isset($element->name)) {
     // код
@@ -660,11 +709,13 @@ if (isset($element->name)) {
 #### Удаление атрибута:
 
 ##### Через метод `removeAttribute`:
+
 ```php
 $element->removeAttribute('name');
 ```
 
 ##### Через магический метод `__unset`:
+
 ```php
 unset($element->name);
 ```
@@ -693,6 +744,82 @@ $element->removeAllAttributes();
 $element->removeAllAttributes(['name', 'type']);
 ```
 
+## Работа с классами элемента
+
+Метод `classes()` возвращает экземпляр `DiDom\ClassAttribute` для управления атрибутом `class`:
+
+```php
+// добавить класс
+$element->classes()->add('foo');
+
+// добавить несколько классов
+$element->classes()->addMultiple(['foo', 'bar', 'baz']);
+
+// получить все классы
+$classes = $element->classes()->getAll();
+
+// проверить наличие класса
+if ($element->classes()->contains('foo')) {
+    // код
+}
+
+// удалить класс
+$element->classes()->remove('foo');
+
+// удалить несколько классов
+$element->classes()->removeMultiple(['foo', 'bar']);
+
+// удалить все классы
+$element->classes()->removeAll();
+
+// удалить все классы, кроме указанных
+$element->classes()->removeAll(['preserved-class']);
+```
+
+## Работа со стилями элемента
+
+Метод `style()` возвращает экземпляр `DiDom\StyleAttribute` для управления атрибутом `style`:
+
+```php
+// установить свойство
+$element->style()->setProperty('color', 'red');
+
+// установить несколько свойств
+$element->style()->setMultipleProperties([
+    'color' => 'red',
+    'font-size' => '16px',
+]);
+
+// получить свойство
+$color = $element->style()->getProperty('color');
+
+// получить свойство со значением по умолчанию
+$color = $element->style()->getProperty('color', 'black');
+
+// получить несколько свойств
+$styles = $element->style()->getMultipleProperties(['color', 'font-size']);
+
+// получить все свойства
+$allStyles = $element->style()->getAllProperties();
+
+// проверить наличие свойства
+if ($element->style()->hasProperty('color')) {
+    // код
+}
+
+// удалить свойство
+$element->style()->removeProperty('color');
+
+// удалить несколько свойств
+$element->style()->removeMultipleProperties(['color', 'font-size']);
+
+// удалить все свойства
+$element->style()->removeAllProperties();
+
+// удалить все свойства, кроме указанных
+$element->style()->removeAllProperties(['color']);
+```
+
 ## Сравнение элементов
 
 ```php
@@ -712,7 +839,6 @@ var_dump($element->is($element2));
 $list = new Element('ul');
 
 $item = new Element('li', 'Item 1');
-
 $list->appendChild($item);
 
 $items = [
@@ -723,11 +849,36 @@ $items = [
 $list->appendChild($items);
 ```
 
+Метод `prependChild()` добавляет элемент в начало списка дочерних узлов:
+
+```php
+$list = new Element('ul');
+
+$item = new Element('li', 'First item');
+$list->prependChild($item);
+```
+
+## Вставка соседних элементов
+
+Методы `insertSiblingBefore()` и `insertSiblingAfter()` позволяют вставить узел рядом с текущим:
+
+```php
+$list = $document->first('ul');
+$item = $list->first('li');
+
+// вставить элемент перед текущим
+$newItem = new Element('li', 'Before');
+$item->insertSiblingBefore($newItem);
+
+// вставить элемент после текущего
+$newItem = new Element('li', 'After');
+$item->insertSiblingAfter($newItem);
+```
+
 ## Замена элемента
 
 ```php
 $title = new Element('title', 'foo');
-
 $document->first('title')->replace($title);
 ```
 
@@ -797,7 +948,6 @@ Query::setCompiled(['h2' => '//h2']);
 $document = new Document();
 
 $document->preserveWhiteSpace();
-
 $document->loadXml($xml);
 ```
 

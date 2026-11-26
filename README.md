@@ -22,17 +22,20 @@ DiDOM - simple and fast HTML parser.
 - [Changing content](#changing-content)
 - [Output](#output)
 - [Working with elements](#working-with-elements)
-    - [Creating a new element](#creating-a-new-element)
-    - [Getting the name of an element](#getting-the-name-of-an-element)
-    - [Getting parent element](#getting-parent-element)
-    - [Getting sibling elements](#getting-sibling-elements)
-    - [Getting the child elements](#getting-the-child-elements)
-    - [Getting document](#getting-document)
-    - [Working with element attributes](#working-with-element-attributes)
-    - [Comparing elements](#comparing-elements)
-    - [Adding a child element](#adding-a-child-element)
-    - [Replacing element](#replacing-element)
-    - [Removing element](#removing-element)
+- [Creating a new element](#creating-a-new-element)
+- [Getting the name of an element](#getting-the-name-of-an-element)
+- [Getting parent element](#getting-parent-element)
+- [Getting sibling elements](#getting-sibling-elements)
+- [Getting the child elements](#getting-the-child-elements)
+- [Getting document](#getting-document)
+- [Working with element attributes](#working-with-element-attributes)
+- [Working with element classes](#working-with-element-classes)
+- [Working with element styles](#working-with-element-styles)
+- [Comparing elements](#comparing-elements)
+- [Adding a child element](#adding-a-child-element)
+- [Inserting sibling elements](#inserting-sibling-elements)
+- [Replacing element](#replacing-element)
+- [Removing element](#removing-element)
 - [Working with cache](#working-with-cache)
 - [Miscellaneous](#miscellaneous)
 - [Comparison with other parsers](#comparison-with-other-parsers)
@@ -41,7 +44,9 @@ DiDOM - simple and fast HTML parser.
 
 To install DiDOM run the command:
 
-    composer require inilim/didom
+```
+composer require inilim/didom
+```
 
 ## Quick start
 
@@ -96,9 +101,7 @@ __construct($string = null, $isFile = false, $encoding = 'UTF-8', $type = Docume
 $document = new Document();
 
 $document->loadHtml($html);
-
 $document->loadHtmlFile('page.html');
-
 $document->loadHtmlFile('http://www.example.com/');
 ```
 
@@ -109,9 +112,18 @@ These methods accept additional [options](http://php.net/manual/en/libxml.consta
 ```php
 $document->loadHtml($html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
 $document->loadHtmlFile($url, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-
 $document->loadXml($xml, LIBXML_PARSEHUGE);
 $document->loadXmlFile($url, LIBXML_PARSEHUGE);
+```
+
+##### Checking load status
+
+```php
+$document = new Document($html);
+
+if ($document->loadStatus()) {
+    // document loaded successfully
+}
 ```
 
 ## Search for elements
@@ -134,6 +146,39 @@ $posts = $document->find("//div[contains(@class, 'post')]", Query::TYPE_XPATH);
 ```
 
 If the elements that match a given expression are found, then method returns an array of instances of `DiDom\Element`, otherwise - an empty array. You could also get an array of `DOMElement` objects. To get this, pass `false` as the third parameter.
+
+##### With method `first()`:
+
+Returns the first found element or `null` if no elements were found.
+
+Accepts the same parameters as `find()` method.
+
+##### With method `single()`:
+
+Returns the element if exactly one is found. Throws an exception if no elements or more than one element is found.
+
+```php
+use DiDom\Document;
+
+$document = new Document($html);
+
+// returns the element if exactly one is found
+$title = $document->single('title');
+
+// throws an exception if 0 or more than 1 elements are found
+```
+
+##### With method `singleOrNot()`:
+
+Returns the element if exactly one is found, or `null` if none. Throws an exception if more than one element is found.
+
+```php
+$title = $document->singleOrNot('title');
+
+if ($title !== null) {
+    echo $title->text();
+}
+```
 
 ##### With magic method `__invoke()`:
 
@@ -170,6 +215,7 @@ If you need to check if element exist and then get it:
 ```php
 if ($document->has('.post')) {
     $elements = $document->find('.post');
+
     // code
 }
 ```
@@ -186,7 +232,7 @@ because in the first case it makes two queries.
 
 ## Search in element
 
-Methods `find()`, `first()`, `xpath()`, `has()`, `count()` are available in Element too.
+Methods `find()`, `first()`, `single()`, `singleOrNot()`, `xpath()`, `has()`, `count()` are available in Element too.
 
 Example:
 
@@ -196,7 +242,7 @@ echo $document->find('nav')[0]->first('ul.menu')->xpath('//li')[0]->text();
 
 #### Method `findInDocument()`
 
-If you change, replace, or remove an element that was found in another element, the document will not be changed. This happens because method `find()` of `Element` class (a, respectively, the `first ()` and `xpath` methods) creates a new document to search.
+If you change, replace, or remove an element that was found in another element, the document will not be changed. This happens because method `find()` of `Element` class (a, respectively, the `first()` and `xpath` methods) creates a new document to search.
 
 To search for elements in the source document, you must use the methods `findInDocument()` and `firstInDocument()`:
 
@@ -231,6 +277,7 @@ $document->find('#foo.bar');
 
 // any element with attribute "name"
 $document->find('[name]');
+
 // the same as
 $document->find('*[name]');
 
@@ -270,14 +317,15 @@ $element->setInnerHtml('<a href="#">Foo</a>');
 
 ```php
 $element->setInnerXml(' Foo <span>Bar</span><!-- Baz --><![CDATA[
-    <root>Hello world!</root>
-]]>');
+<root>Hello world!</root>
+]]');
 ```
 
 ### Change value (as plain text)
 
 ```php
 $element->setValue('Foo');
+
 // will be encoded like using htmlentities()
 $element->setValue('<a href="#">Foo</a>');
 ```
@@ -290,7 +338,6 @@ $element->setValue('<a href="#">Foo</a>');
 
 ```php
 $posts = $document->find('.post');
-
 echo $posts[0]->html();
 ```
 
@@ -307,7 +354,6 @@ $html = $document->format()->html();
 ```
 
 An element does not have `format()` method, so if you need to output formatted HTML of the element, then first you have to convert it to a document:
-
 
 ```php
 $html = $element->toDocument()->format()->html();
@@ -329,7 +375,6 @@ $innerHtml = $document->toElement()->innerHtml();
 
 ```php
 echo $document->xml();
-
 echo $document->first('book')->xml();
 ```
 
@@ -337,7 +382,6 @@ echo $document->first('book')->xml();
 
 ```php
 $posts = $document->find('.post');
-
 echo $posts[0]->text();
 ```
 
@@ -407,7 +451,6 @@ $document = new Document($html);
 $item = $document->find('ul.menu > li')[1];
 
 var_dump($item->previousSibling());
-
 var_dump($item->nextSibling());
 ```
 
@@ -454,16 +497,19 @@ var_dump($document->is($document2));
 #### Creating/updating an attribute
 
 ##### With method `setAttribute`:
+
 ```php
 $element->setAttribute('name', 'username');
 ```
 
 ##### With method `attr`:
+
 ```php
 $element->attr('name', 'username');
 ```
 
 ##### With magic method `__set`:
+
 ```php
 $element->name = 'username';
 ```
@@ -522,6 +568,82 @@ $element->removeAttribute('name');
 unset($element->name);
 ```
 
+## Working with element classes
+
+The `classes()` method returns a `DiDom\ClassAttribute` instance for managing the `class` attribute:
+
+```php
+// add a class
+$element->classes()->add('foo');
+
+// add multiple classes
+$element->classes()->addMultiple(['foo', 'bar', 'baz']);
+
+// get all classes
+$classes = $element->classes()->getAll();
+
+// check if class exists
+if ($element->classes()->contains('foo')) {
+    // code
+}
+
+// remove a class
+$element->classes()->remove('foo');
+
+// remove multiple classes
+$element->classes()->removeMultiple(['foo', 'bar']);
+
+// remove all classes
+$element->classes()->removeAll();
+
+// remove all classes except specified
+$element->classes()->removeAll(['preserved-class']);
+```
+
+## Working with element styles
+
+The `style()` method returns a `DiDom\StyleAttribute` instance for managing the `style` attribute:
+
+```php
+// set a property
+$element->style()->setProperty('color', 'red');
+
+// set multiple properties
+$element->style()->setMultipleProperties([
+    'color' => 'red',
+    'font-size' => '16px',
+]);
+
+// get a property
+$color = $element->style()->getProperty('color');
+
+// get a property with default value
+$color = $element->style()->getProperty('color', 'black');
+
+// get multiple properties
+$styles = $element->style()->getMultipleProperties(['color', 'font-size']);
+
+// get all properties
+$allStyles = $element->style()->getAllProperties();
+
+// check if property exists
+if ($element->style()->hasProperty('color')) {
+    // code
+}
+
+// remove a property
+$element->style()->removeProperty('color');
+
+// remove multiple properties
+$element->style()->removeMultipleProperties(['color', 'font-size']);
+
+// remove all properties
+$element->style()->removeAllProperties();
+
+// remove all properties except specified
+$element->style()->removeAllProperties(['color']);
+```
+
 ## Comparing elements
 
 ```php
@@ -541,7 +663,6 @@ var_dump($element->is($element2));
 $list = new Element('ul');
 
 $item = new Element('li', 'Item 1');
-
 $list->appendChild($item);
 
 $items = [
@@ -552,30 +673,40 @@ $items = [
 $list->appendChild($items);
 ```
 
-## Adding a child element
+The `prependChild()` method adds an element at the beginning of child nodes:
 
 ```php
 $list = new Element('ul');
 
-$item = new Element('li', 'Item 1');
-$items = [
-    new Element('li', 'Item 2'),
-    new Element('li', 'Item 3'),
-];
+$item = new Element('li', 'First item');
+$list->prependChild($item);
+```
 
-$list->appendChild($item);
-$list->appendChild($items);
+## Inserting sibling elements
+
+The `insertSiblingBefore()` and `insertSiblingAfter()` methods allow inserting a node next to the current one:
+
+```php
+$list = $document->first('ul');
+$item = $list->first('li');
+
+// insert element before the current one
+$newItem = new Element('li', 'Before');
+$item->insertSiblingBefore($newItem);
+
+// insert element after the current one
+$newItem = new Element('li', 'After');
+$item->insertSiblingAfter($newItem);
 ```
 
 ## Replacing element
 
 ```php
 $element = new Element('span', 'hello');
-
 $document->find('.post')[0]->replace($element);
 ```
 
-**Waning:** you can replace only those elements that were found directly in the document:
+**Warning:** you can replace only those elements that were found directly in the document:
 
 ```php
 // nothing will happen
@@ -585,7 +716,7 @@ $document->first('head')->first('title')->replace($title);
 $document->first('head title')->replace($title);
 ```
 
-More about this in section [Search for elements](#search-for-elements).
+More about this in section [Search in element](#search-in-element).
 
 ## Removing element
 
@@ -603,7 +734,7 @@ $document->first('head')->first('title')->remove();
 $document->first('head title')->remove();
 ```
 
-More about this in section [Search for elements](#search-for-elements).
+More about this in section [Search in element](#search-in-element).
 
 ## Working with cache
 
@@ -641,13 +772,12 @@ You can enable the `preserveWhiteSpace` option before loading the document:
 $document = new Document();
 
 $document->preserveWhiteSpace();
-
 $document->loadXml($xml);
 ```
 
 #### `count`
 
-The `count ()` method counts children that match the selector:
+The `count()` method counts children that match the selector:
 
 ```php
 // prints the number of links in the document
