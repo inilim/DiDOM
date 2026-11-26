@@ -10,24 +10,17 @@ class StyleAttribute
 {
     /**
      * The DOM element instance.
-     *
-     * @var Element
      */
-    protected $element;
+    protected Element $element;
 
-    /**
-     * @var string
-     */
-    protected $styleString = '';
+    protected string $styleString = '';
 
     /**
      * @var array
      */
-    protected $properties = [];
+    protected array $properties = [];
 
     /**
-     * @param Element $element
-     *
      * @throws InvalidArgumentException if parameter 1 is not an element node
      */
     public function __construct(Element $element)
@@ -44,7 +37,7 @@ class StyleAttribute
     /**
      * Parses style attribute of the element.
      */
-    protected function parseStyleAttribute()
+    protected function parseStyleAttribute():void
     {
         if (! $this->element->hasAttribute('style')) {
             // possible if style attribute has been removed
@@ -94,9 +87,6 @@ class StyleAttribute
         $this->element->setAttribute('style', $this->styleString);
     }
 
-    /**
-     * @return string
-     */
     protected function buildStyleString(): string
     {
         $properties = [];
@@ -111,8 +101,6 @@ class StyleAttribute
     /**
      * @param string $name
      * @param string $value
-     *
-     * @return StyleAttribute
      *
      * @throws InvalidArgumentException if property name is not a string
      * @throws InvalidArgumentException if property value is not a string
@@ -130,8 +118,6 @@ class StyleAttribute
 
     /**
      * @param array $properties
-     *
-     * @return StyleAttribute
      *
      * @throws InvalidArgumentException if property name is not a string
      * @throws InvalidArgumentException if property value is not a string
@@ -210,11 +196,6 @@ class StyleAttribute
         return $this->properties;
     }
 
-    /**
-     * @param string $name
-     *
-     * @return bool
-     */
     public function hasProperty(string $name): bool
     {
         $this->parseStyleAttribute();
@@ -223,10 +204,6 @@ class StyleAttribute
     }
 
     /**
-     * @param string $name
-     *
-     * @return StyleAttribute
-     *
      * @throws InvalidArgumentException if property name is not a string
      */
     public function removeProperty(string $name): self
@@ -242,9 +219,6 @@ class StyleAttribute
 
     /**
      * @param array $propertyNames
-     *
-     * @return StyleAttribute
-     *
      * @throws InvalidArgumentException if property name is not a string
      */
     public function removeMultipleProperties(array $propertyNames): self
@@ -266,8 +240,6 @@ class StyleAttribute
 
     /**
      * @param string[] $preserved
-     *
-     * @return StyleAttribute
      */
     public function removeAllProperties(array $preserved = []): self
     {
@@ -294,9 +266,6 @@ class StyleAttribute
         return $this;
     }
 
-    /**
-     * @return Element
-     */
     public function getElement(): Element
     {
         return $this->element;

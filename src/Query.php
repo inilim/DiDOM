@@ -21,7 +21,7 @@ class Query
     /**
      * @var array
      */
-    protected static $compiled = [];
+    protected static array $compiled = [];
 
     /**
      * Converts a CSS selector into an XPath expression.
@@ -417,8 +417,6 @@ class Query
      * @param string $string
      * @param bool $caseSensitive
      * @param bool $fullMatch
-     *
-     * @return string
      */
     protected static function convertContains(string $string, bool $caseSensitive = true, bool $fullMatch = false): string
     {

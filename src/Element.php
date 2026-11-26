@@ -17,15 +17,8 @@ use RuntimeException;
 
 class Element extends Node
 {
-    /**
-     * @var ClassAttribute
-     */
-    protected $classAttribute;
-
-    /**
-     * @var StyleAttribute
-     */
-    protected $styleAttribute;
+    protected ClassAttribute $classAttribute;
+    protected StyleAttribute $styleAttribute;
 
     /**
      * @param DOMElement|DOMText|DOMComment|DOMCdataSection|string $tagName The tag name of an element
@@ -59,8 +52,6 @@ class Element extends Node
      * @param DOMNode|string $name The tag name of an element
      * @param string|integer|float|null $value The value of an element
      * @param array $attributes The attributes of an element
-     *
-     * @return Element
      */
     public static function create($name, $value = null, array $attributes = []): self
     {
@@ -73,8 +64,6 @@ class Element extends Node
      * @param string $selector
      * @param string|null $value
      * @param array $attributes
-     *
-     * @return Element
      *
      * @throws InvalidSelectorException
      */
@@ -93,8 +82,6 @@ class Element extends Node
      *
      * @param string $selector CSS selector
      * @param bool $strict
-     *
-     * @return bool
      *
      * @throws InvalidSelectorException if the selector is invalid
      * @throws InvalidArgumentException if the tag name is not a string
@@ -171,8 +158,6 @@ class Element extends Node
      * Determine if an attribute exists on the element.
      *
      * @param string $name The name of an attribute
-     *
-     * @return bool
      */
     public function hasAttribute(string $name): bool
     {
@@ -184,8 +169,6 @@ class Element extends Node
      *
      * @param string $name The name of an attribute
      * @param string|integer|float $value The value of an attribute
-     *
-     * @return Element
      */
     public function setAttribute(string $name, $value): Element
     {
@@ -227,8 +210,6 @@ class Element extends Node
      * Unset an attribute on the element.
      *
      * @param string $name The name of an attribute
-     *
-     * @return Element
      */
     public function removeAttribute(string $name): self
     {
@@ -241,8 +222,6 @@ class Element extends Node
      * Unset all attributes of the element.
      *
      * @param string[] $preserved
-     *
-     * @return Element
      */
     public function removeAllAttributes(array $preserved = []): self
     {
@@ -313,8 +292,6 @@ class Element extends Node
     }
 
     /**
-     * @return ClassAttribute
-     *
      * @throws LogicException if the node is not an instance of DOMElement
      */
     public function classes(): ClassAttribute
@@ -333,8 +310,6 @@ class Element extends Node
     }
 
     /**
-     * @return StyleAttribute
-     *
      * @throws LogicException if the node is not an instance of DOMElement
      */
     public function style(): StyleAttribute
@@ -381,8 +356,6 @@ class Element extends Node
      * Determine if an attribute exists on the element.
      *
      * @param string $name The attribute name
-     *
-     * @return bool
      */
     public function __isset(string $name): bool
     {

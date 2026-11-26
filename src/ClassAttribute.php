@@ -10,24 +10,19 @@ class ClassAttribute
 {
     /**
      * The DOM element instance.
-     *
-     * @var Element
      */
-    protected $element;
+    protected Element $element;
 
     /**
-     * @var string
      */
-    protected $classesString = '';
+    protected string $classesString = '';
 
     /**
      * @var string[]
      */
-    protected $classes = [];
+    protected array $classes = [];
 
     /**
-     * @param Element $element
-     *
      * @throws InvalidArgumentException if parameter 1 is not an element node
      */
     public function __construct(Element $element)
@@ -44,7 +39,7 @@ class ClassAttribute
     /**
      * Parses class attribute of the element.
      */
-    protected function parseClassAttribute()
+    protected function parseClassAttribute(): void
     {
         if (! $this->element->hasAttribute('class')) {
             // possible if class attribute has been removed
@@ -72,19 +67,22 @@ class ClassAttribute
             return;
         }
 
-        $classes = \explode(' ', $classesString);
+        $classes = [];
+        foreach (\explode(' ', $classesString) as $class) {
+            $class = \trim($class);
+            if ('' === $class) {
+                continue;
+            }
+            $classes[] = $class;
+        }
 
-        $classes = \array_map('trim', $classes);
-        $classes = \array_filter($classes);
-        $classes = \array_unique($classes);
-
-        $this->classes = \array_values($classes);
+        $this->classes = \array_values(\array_unique($classes));
     }
 
     /**
      * Updates class attribute of the element.
      */
-    protected function updateClassAttribute()
+    protected function updateClassAttribute(): void
     {
         $this->classesString = \implode(' ', $this->classes);
 
@@ -92,10 +90,6 @@ class ClassAttribute
     }
 
     /**
-     * @param string $className
-     *
-     * @return ClassAttribute
-     *
      * @throws InvalidArgumentException if class name is not a string
      */
     public function add(string $className): self
@@ -115,8 +109,6 @@ class ClassAttribute
 
     /**
      * @param array $classNames
-     *
-     * @return ClassAttribute
      *
      * @throws InvalidArgumentException if class name is not a string
      */
@@ -152,9 +144,6 @@ class ClassAttribute
     }
 
     /**
-     * @param string $className
-     *
-     * @return bool
      */
     public function contains(string $className): bool
     {
@@ -164,10 +153,6 @@ class ClassAttribute
     }
 
     /**
-     * @param string $className
-     *
-     * @return ClassAttribute
-     *
      * @throws InvalidArgumentException if class name is not a string
      */
     public function remove(string $className): self
@@ -189,9 +174,6 @@ class ClassAttribute
 
     /**
      * @param array $classNames
-     *
-     * @return ClassAttribute
-     *
      * @throws InvalidArgumentException if class name is not a string
      */
     public function removeMultiple(array $classNames): self
@@ -219,8 +201,6 @@ class ClassAttribute
 
     /**
      * @param string[] $preserved
-     *
-     * @return ClassAttribute
      */
     public function removeAll(array $preserved = []): self
     {
@@ -248,7 +228,6 @@ class ClassAttribute
     }
 
     /**
-     * @return Element
      */
     public function getElement(): Element
     {

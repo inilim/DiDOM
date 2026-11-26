@@ -6,20 +6,14 @@ namespace DiDom;
 
 class Errors
 {
-    /**
-     * @var bool
-     */
-    protected static $internalErrors;
+    protected static bool $internalErrors;
 
-    /**
-     * @var bool
-     */
-    protected static $disableEntities;
+    protected static bool $disableEntities;
 
     /**
      * Disable error reporting.
      */
-    public static function disable()
+    public static function disable(): void
     {
         self::$internalErrors = \libxml_use_internal_errors(true);
 
@@ -30,10 +24,8 @@ class Errors
 
     /**
      * Restore error reporting.
-     * 
-     * @param bool $clear
      */
-    public static function restore($clear = true)
+    public static function restore(bool $clear = true): void
     {
         if ($clear) {
             \libxml_clear_errors();

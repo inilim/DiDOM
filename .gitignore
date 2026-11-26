@@ -1,4 +1,5 @@
 /vendor
+/.sandbox
 /.idea
 composer.phar
 .php_cs.cache

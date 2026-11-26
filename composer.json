@@ -2,7 +2,12 @@
     "name": "inilim/didom",
     "description": "Simple and fast HTML parser",
     "type": "library",
-    "keywords": ["didom", "parser", "html", "xml"],
+    "keywords": [
+        "didom",
+        "parser",
+        "html",
+        "xml"
+    ],
     "license": "MIT",
     "homepage": "https://github.com/Imangazaliev/DiDOM",
     "authors": [
@@ -11,27 +16,36 @@
             "email": "imangazalievm@gmail.com"
         }
     ],
+    "scripts": {
+        "tests": [
+            "php vendor/bin/phpunit tests"
+        ],
+        "stan": [
+            "php vendor/bin/phpstan analyze"
+        ]
+    },
     "require": {
-        "php": ">=7.2",
+        "php": ">=7.4",
         "ext-dom": "*",
         "ext-iconv": "*"
     },
     "require-dev": {
-        "phpunit/phpunit": "^8.5"
+        "phpunit/phpunit": "^8.5",
+        "inilim/tools": "^0.1.20261104"
     },
     "autoload": {
         "psr-4": {
-            "DiDom\\": "src/DiDom/"
+            "DiDom\\": "src/"
         }
     },
     "autoload-dev": {
-        "psr-4": { 
+        "psr-4": {
             "DiDom\\Tests\\": "tests/"
         }
     },
     "config": {
         "platform": {
-            "php": "7.2"
+            "php": "7.4.99"
         }
     }
 }

@@ -11,8 +11,6 @@ class Encoder
     /**
      * @param string $string
      * @param string $encoding
-     *
-     * @return string
      */
     public static function convertToHtmlEntities(string $string, string $encoding): string
     {
@@ -31,8 +29,6 @@ class Encoder
 
     /**
      * @param string[] $matches
-     *
-     * @return string
      */
     private static function htmlEncodingCallback(array $matches): string
     {
