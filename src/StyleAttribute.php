@@ -23,7 +23,7 @@ class StyleAttribute
      */
     public function __construct(Element $element)
     {
-        if (! $element->isElementNode()) {
+        if (false === $element->isElementNode()) {
             throw new \InvalidArgumentException(\sprintf('The element must contain DOMElement node.'));
         }
 
@@ -37,7 +37,7 @@ class StyleAttribute
      */
     protected function parseStyleAttribute():void
     {
-        if (! $this->element->hasAttribute('style')) {
+        if (false === $this->element->hasAttribute('style')) {
             // possible if style attribute has been removed
             if ('' !== $this->styleString) {
                 $this->styleString = '';
@@ -125,11 +125,11 @@ class StyleAttribute
         $this->parseStyleAttribute();
 
         foreach ($properties as $propertyName => $value) {
-            if (! \is_string($propertyName)) {
+            if (false === \is_string($propertyName)) {
                 throw new \InvalidArgumentException(\sprintf('Property name must be a string, %s given.', (\is_object($propertyName) ? \get_class($propertyName) : \gettype($propertyName))));
             }
 
-            if (! \is_string($value)) {
+            if (false === \is_string($value)) {
                 throw new \InvalidArgumentException(\sprintf('Property value must be a string, %s given.', (\is_object($value) ? \get_class($value) : \gettype($value))));
             }
 
@@ -151,7 +151,7 @@ class StyleAttribute
     {
         $this->parseStyleAttribute();
 
-        if (! \array_key_exists($name, $this->properties)) {
+        if (false === \array_key_exists($name, $this->properties)) {
             return $default;
         }
 
@@ -172,11 +172,11 @@ class StyleAttribute
         $result = [];
 
         foreach ($propertyNames as $propertyName) {
-            if (! \is_string($propertyName)) {
+            if (false === \is_string($propertyName)) {
                 throw new \InvalidArgumentException(\sprintf('Property name must be a string, %s given.', (\is_object($propertyName) ? \get_class($propertyName) : \gettype($propertyName))));
             }
 
-            if (\array_key_exists($propertyName, $this->properties)) {
+            if (true === \array_key_exists($propertyName, $this->properties)) {
                 $result[$propertyName] = $this->properties[$propertyName];
             }
         }
@@ -224,7 +224,7 @@ class StyleAttribute
         $this->parseStyleAttribute();
 
         foreach ($propertyNames as $propertyName) {
-            if (! \is_string($propertyName)) {
+            if (false === \is_string($propertyName)) {
                 throw new \InvalidArgumentException(\sprintf('Property name must be a string, %s given.', (\is_object($propertyName) ? \get_class($propertyName) : \gettype($propertyName))));
             }
 
@@ -246,11 +246,11 @@ class StyleAttribute
         $preservedProperties = [];
 
         foreach ($preserved as $propertyName) {
-            if (! \is_string($propertyName)) {
+            if (false === \is_string($propertyName)) {
                 throw new \InvalidArgumentException(\sprintf('Property name must be a string, %s given.', (\is_object($propertyName) ? \get_class($propertyName) : \gettype($propertyName))));
             }
 
-            if (! \array_key_exists($propertyName, $this->properties)) {
+            if (false === \array_key_exists($propertyName, $this->properties)) {
                 continue;
             }
 

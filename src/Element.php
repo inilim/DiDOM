@@ -19,7 +19,7 @@ class Element extends Node
      */
     public function __construct($tagName, $value = null, array $attributes = [])
     {
-        if (\is_string($tagName)) {
+        if (true === \is_string($tagName)) {
             $document = new \DOMDocument('1.0', 'UTF-8');
             $node = $document->createElement($tagName);
 
@@ -80,7 +80,7 @@ class Element extends Node
      */
     public function matches(string $selector, bool $strict = false): bool
     {
-        if (! $this->node instanceof \DOMElement) {
+        if (false === ($this->node instanceof \DOMElement)) {
             return false;
         }
 
@@ -88,7 +88,7 @@ class Element extends Node
             return true;
         }
 
-        if (! $strict) {
+        if (false === $strict) {
             $innerHtml = $this->html();
             $html = "<root>$innerHtml</root>";
             $selector = 'root > ' . \trim($selector);
@@ -101,7 +101,7 @@ class Element extends Node
 
         $segments = Query::getSegments($selector);
 
-        if (! \array_key_exists('tag', $segments)) {
+        if (false === \array_key_exists('tag', $segments)) {
             throw new \RuntimeException(\sprintf('Tag name must be specified in %s', $selector));
         }
 
@@ -109,19 +109,19 @@ class Element extends Node
             return false;
         }
 
-        $segments['id'] = \array_key_exists('id', $segments) ? $segments['id'] : null;
+        $segments['id'] = true === \array_key_exists('id', $segments) ? $segments['id'] : null;
 
         if ($segments['id'] !== $this->getAttribute('id')) {
             return false;
         }
 
-        $classes = $this->hasAttribute('class') ? \explode(' ', \trim($this->getAttribute('class'))) : [];
-        $segments['classes'] = \array_key_exists('classes', $segments) ? $segments['classes'] : [];
+        $classes = true === $this->hasAttribute('class') ? \explode(' ', \trim($this->getAttribute('class'))) : [];
+        $segments['classes'] = true === \array_key_exists('classes', $segments) ? $segments['classes'] : [];
 
         $diff1 = \array_diff($segments['classes'], $classes);
         $diff2 = \array_diff($classes, $segments['classes']);
 
-        if (\count($diff1) > 0 || \count($diff2) > 0) {
+        if ([] !== $diff1 || [] !== $diff2) {
             return false;
         }
 
@@ -129,13 +129,13 @@ class Element extends Node
 
         unset($attributes['id'], $attributes['class']);
 
-        $segments['attributes'] = \array_key_exists('attributes', $segments) ? $segments['attributes'] : [];
+        $segments['attributes'] = true === \array_key_exists('attributes', $segments) ? $segments['attributes'] : [];
 
         $diff1 = \array_diff_assoc($segments['attributes'], $attributes);
         $diff2 = \array_diff_assoc($attributes, $segments['attributes']);
 
         // if the attributes are not equal
-        if (\count($diff1) > 0 || \count($diff2) > 0) {
+        if ([] !== $diff1 || [] !== $diff2) {
             return false;
         }
 
@@ -160,11 +160,11 @@ class Element extends Node
      */
     public function setAttribute(string $name, $value): Element
     {
-        if (\is_numeric($value)) {
+        if (true === \is_numeric($value)) {
             $value = (string) $value;
         }
 
-        if (! \is_string($value)) {
+        if (false === \is_string($value)) {
             throw new \InvalidArgumentException(\sprintf(
                 '%s expects parameter 2 to be string or null, %s given.',
                 __METHOD__,
@@ -187,7 +187,7 @@ class Element extends Node
      */
     public function getAttribute(string $name, ?string $default = null): ?string
     {
-        if ($this->hasAttribute($name)) {
+        if (true === $this->hasAttribute($name)) {
             return $this->node->getAttribute($name);
         }
 
@@ -213,12 +213,12 @@ class Element extends Node
      */
     public function removeAllAttributes(array $preserved = []): self
     {
-        if (! $this->node instanceof \DOMElement) {
+        if (false === ($this->node instanceof \DOMElement)) {
             return $this;
         }
 
         foreach ($this->attributes() as $name => $value) {
-            if (\in_array($name, $preserved, true)) {
+            if (true === \in_array($name, $preserved, true)) {
                 continue;
             }
 
@@ -254,7 +254,7 @@ class Element extends Node
      */
     public function attributes(?array $names = null): ?array
     {
-        if (! $this->node instanceof \DOMElement) {
+        if (false === ($this->node instanceof \DOMElement)) {
             return null;
         }
 
@@ -271,7 +271,7 @@ class Element extends Node
         $result = [];
 
         foreach ($this->node->attributes as $name => $attribute) {
-            if (\in_array($name, $names, true)) {
+            if (true === \in_array($name, $names, true)) {
                 $result[$name] = $attribute->value;
             }
         }
@@ -288,7 +288,7 @@ class Element extends Node
             return $this->classAttribute;
         }
 
-        if (! $this->isElementNode()) {
+        if (false === $this->isElementNode()) {
             throw new \LogicException('Class attribute is available only for element nodes.');
         }
 
@@ -306,7 +306,7 @@ class Element extends Node
             return $this->styleAttribute;
         }
 
-        if (! $this->isElementNode()) {
+        if (false === $this->isElementNode()) {
             throw new \LogicException('Style attribute is available only for element nodes.');
         }
 

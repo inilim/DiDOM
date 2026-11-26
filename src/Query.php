@@ -47,7 +47,7 @@ class Query
             return $expression;
         }
 
-        if (! \array_key_exists($expression, static::$compiled)) {
+        if (false === \array_key_exists($expression, static::$compiled)) {
             static::$compiled[$expression] = static::cssToXpath($expression);
         }
 
@@ -100,11 +100,11 @@ class Query
         $segments = self::getSegments($selector);
         $xpath = '';
 
-        while (\count($segments) > 0) {
+        while ([] !== $segments) {
             $xpath .= self::buildXpath($segments, $prefix);
 
             $selector = \trim(\substr($selector, \strlen($segments['selector'])));
-            $prefix = isset($segments['rel']) ? '/' : '//';
+            $prefix = true === isset($segments['rel']) ? '/' : '//';
 
             if ('' === $selector || '::' === \substr($selector, 0, 2) || ',' === \substr($selector, 0, 1)) {
                 break;
@@ -149,7 +149,7 @@ class Query
 
         $result['property'] = $matches[0];
         $result['name'] = $matches['name'];
-        $result['args'] = isset($matches['args']) ? \explode(',', $matches['args']) : [];
+        $result['args'] = true === isset($matches['args']) ? \explode(',', $matches['args']) : [];
 
         $result['args'] = \array_map('trim', $result['args']);
 
@@ -171,7 +171,7 @@ class Query
         }
 
         if ('attr' === $name) {
-            if (0 === \count($parameters)) {
+            if ([] === $parameters) {
                 return '@*';
             }
 
@@ -265,26 +265,26 @@ class Query
         $attributes = [];
 
         // if the id attribute specified
-        if (isset($segments['id'])) {
+        if (true === isset($segments['id'])) {
             $attributes[] = \sprintf('@id="%s"', $segments['id']);
         }
 
         // if the class attribute specified
-        if (isset($segments['classes'])) {
+        if (true === isset($segments['classes'])) {
             foreach ($segments['classes'] as $class) {
                 $attributes[] = \sprintf('contains(concat(" ", normalize-space(@class), " "), " %s ")', $class);
             }
         }
 
         // if the attributes specified
-        if (isset($segments['attributes'])) {
+        if (true === isset($segments['attributes'])) {
             foreach ($segments['attributes'] as $name => $value) {
                 $attributes[] = self::convertAttribute($name, $value);
             }
         }
 
         // if the pseudo class specified
-        if (\array_key_exists('pseudo', $segments)) {
+        if (true === \array_key_exists('pseudo', $segments)) {
             foreach ($segments['pseudo'] as $pseudo) {
                 $expression = null !== $pseudo['expression'] ? $pseudo['expression'] : '';
 
@@ -295,14 +295,14 @@ class Query
             }
         }
 
-        if (0 === \count($attributes) && ! isset($segments['tag'])) {
+        if ([] === $attributes && false === isset($segments['tag'])) {
             throw new \InvalidArgumentException('The array of segments must contain the name of the tag or at least one attribute.');
         }
 
         $xpath = $prefix . $tagName;
 
         if (0 !== ($count = \count($attributes))) {
-            $xpath .= ($count > 1) ? \sprintf('[(%s)]', \implode(') and (', $attributes)) : \sprintf('[%s]', $attributes[0]);
+            $xpath .= (1 < $count) ? \sprintf('[(%s)]', \implode(') and (', $attributes)) : \sprintf('[%s]', $attributes[0]);
         }
 
         return $xpath;
@@ -316,10 +316,10 @@ class Query
      */
     protected static function convertAttribute(string $name, ?string $value): string
     {
-        $isSimpleSelector = ! \in_array(\substr($name, 0, 1), ['^', '!'], true);
-        $isSimpleSelector = $isSimpleSelector && (! \in_array(\substr($name, -1), ['^', '$', '*', '!', '~'], true));
+        $isSimpleSelector = false === \in_array(\substr($name, 0, 1), ['^', '!'], true);
+        $isSimpleSelector = true === $isSimpleSelector && false === \in_array(\substr($name, -1), ['^', '$', '*', '!', '~'], true);
 
-        if ($isSimpleSelector) {
+        if (true === $isSimpleSelector) {
             // if specified only the attribute name
             $xpath = null === $value ? '@' . $name : \sprintf('@%s="%s"', $name, $value);
 
@@ -394,15 +394,15 @@ class Query
             return 'position() mod 2 = 0 and position() >= 0';
         }
 
-        if (\is_numeric($expression)) {
+        if (true === \is_numeric($expression)) {
             return \sprintf('position() = %d', $expression);
         }
 
-        if (\preg_match("/^(?P<mul>[0-9]?n)(?:(?P<sign>\+|\-)(?P<pos>[0-9]+))?$/is", $expression, $segments)) {
-            if (isset($segments['mul'])) {
+        if (1 === \preg_match("/^(?P<mul>[0-9]?n)(?:(?P<sign>\+|\-)(?P<pos>[0-9]+))?$/is", $expression, $segments)) {
+            if (true === isset($segments['mul'])) {
                 $multiplier = 'n' === $segments['mul'] ? 1 : \trim($segments['mul'], 'n');
-                $sign = (isset($segments['sign']) && '+' === $segments['sign']) ? '-' : '+';
-                $position = isset($segments['pos']) ? $segments['pos'] : 0;
+                $sign = (true === isset($segments['sign']) && '+' === $segments['sign']) ? '-' : '+';
+                $position = true === isset($segments['pos']) ? $segments['pos'] : 0;
 
                 return \sprintf('(position() %s %d) mod %d = 0 and position() >= %d', $sign, $position, $multiplier, $position);
             }
@@ -418,21 +418,21 @@ class Query
      */
     protected static function convertContains(string $string, bool $caseSensitive = true, bool $fullMatch = false): string
     {
-        if ($caseSensitive && $fullMatch) {
+        if (true === $caseSensitive && true === $fullMatch) {
             return \sprintf('text() = "%s"', $string);
         }
 
-        if ($caseSensitive && ! $fullMatch) {
+        if (true === $caseSensitive && false === $fullMatch) {
             return \sprintf('contains(text(), "%s")', $string);
         }
 
-        $strToLowerFunction = \function_exists('mb_strtolower') ? 'mb_strtolower' : 'strtolower';
+        $strToLowerFunction = true === \function_exists('mb_strtolower') ? 'mb_strtolower' : 'strtolower';
 
-        if (! $caseSensitive && $fullMatch) {
+        if (false === $caseSensitive && true === $fullMatch) {
             return \sprintf("php:functionString(\"{$strToLowerFunction}\", .) = php:functionString(\"{$strToLowerFunction}\", \"%s\")", $string);
         }
 
-        // if ! $caseSensitive and ! $fullMatch
+        // if false === $caseSensitive and false === $fullMatch
         return \sprintf("contains(php:functionString(\"{$strToLowerFunction}\", .), php:functionString(\"{$strToLowerFunction}\", \"%s\"))", $string);
     }
 
@@ -461,17 +461,17 @@ class Query
 
         $result = ['selector' => $segments[0]];
 
-        if (isset($segments['tag']) && '' !== $segments['tag']) {
+        if (true === isset($segments['tag']) && '' !== $segments['tag']) {
             $result['tag'] = $segments['tag'];
         }
 
         // if the id attribute specified
-        if (isset($segments['id']) && '' !== $segments['id']) {
+        if (true === isset($segments['id']) && '' !== $segments['id']) {
             $result['id'] = $segments['id'];
         }
 
         // if the attributes specified
-        if (isset($segments['attrs'])) {
+        if (true === isset($segments['attrs'])) {
             $attributes = \trim($segments['attrs'], '[]');
             $attributes = \explode('][', $attributes);
 
@@ -484,13 +484,13 @@ class Query
                     }
 
                     // equal null if specified only the attribute name
-                    $result['attributes'][$name] = \is_string($value) ? \trim($value, '\'"') : null;
+                    $result['attributes'][$name] = true === \is_string($value) ? \trim($value, '\'"') : null;
                 }
             }
         }
 
         // if the class attribute specified
-        if (isset($segments['classes'])) {
+        if (true === isset($segments['classes'])) {
             $classes = \trim($segments['classes'], '.');
             $classes = \explode('.', $classes);
 
@@ -502,7 +502,7 @@ class Query
         }
 
         // if the pseudo class specified
-        if (isset($segments['pseudo']) && '' !== $segments['pseudo']) {
+        if (true === isset($segments['pseudo']) && '' !== $segments['pseudo']) {
             \preg_match_all('/:(?P<type>[\w\-]+)(?:\((?P<expr>[^\)]+)\))?/', $segments['pseudo'], $pseudoClasses);
 
             $result['pseudo'] = [];
@@ -516,7 +516,7 @@ class Query
         }
 
         // if it is a direct descendant
-        if (isset($segments['rel'])) {
+        if (true === isset($segments['rel'])) {
             $result['rel'] = $segments['rel'];
         }
 

@@ -164,7 +164,7 @@ class Document
     {
         $returnArray = true;
 
-        if (! \is_array($nodes)) {
+        if (false === \is_array($nodes)) {
             $nodes = [$nodes];
 
             $returnArray = false;
@@ -177,7 +177,7 @@ class Document
                 $node = $node->getNode();
             }
 
-            if (! $node instanceof \DOMNode) {
+            if (false === ($node instanceof \DOMNode)) {
                 throw new \InvalidArgumentException(\sprintf(
                     'Argument 1 passed to %s must be an instance of %s\Element or DOMNode, %s given.',
                     __METHOD__,
@@ -228,7 +228,7 @@ class Document
      */
     public function load(string $string, bool $isFile = false, string $type = Document::TYPE_HTML, ?int $options = null): void
     {
-        if (! \in_array(\strtolower($type), [Document::TYPE_HTML, Document::TYPE_XML], true)) {
+        if (false === \in_array(\strtolower($type), [Document::TYPE_HTML, Document::TYPE_XML], true)) {
             throw new \RuntimeException(\sprintf('Document type must be "xml" or "html", %s given.', $type));
         }
 
@@ -239,7 +239,7 @@ class Document
 
         $string = \trim($string);
 
-        if ($isFile) {
+        if (true === $isFile) {
             $string = $this->loadFile($string);
         }
 
@@ -376,7 +376,7 @@ class Document
                 $contextNode = $contextNode->getNode();
             }
 
-            if (! $contextNode instanceof \DOMElement) {
+            if (false === ($contextNode instanceof \DOMElement)) {
                 throw new \InvalidArgumentException(\sprintf(
                     'Argument 4 passed to %s must be an instance of %s\Element or DOMElement, %s given.',
                     __METHOD__,
@@ -394,7 +394,7 @@ class Document
 
         $result = [];
 
-        if ($wrapNode) {
+        if (true === $wrapNode) {
             foreach ($nodeList as $node) {
                 $result[] = $this->wrapNode($node);
             }
@@ -431,7 +431,7 @@ class Document
             throw new \Exception(
                 \sprintf('Expected strictly one element for selector "%s", but found none.', $expression)
             );
-        } elseif ($count > 1) {
+        } elseif (1 < $count) {
             throw new \Exception(
                 \sprintf('Expected strictly one element for selector "%s", but found %s.', $expression, $count)
             );
@@ -464,7 +464,7 @@ class Document
 
         if (0 === $count) {
             return null;
-        } elseif ($count > 1) {
+        } elseif (1 < $count) {
             throw new \Exception(
                 \sprintf('Expected strictly one or not element for selector "%s", but found %s.', $expression, $count)
             );
@@ -499,7 +499,7 @@ class Document
 
         $nodes = $this->find($expression, Query::TYPE_XPATH, false, $contextNode);
 
-        if (0 === \count($nodes)) {
+        if ([] === $nodes) {
             return null;
         }
 
@@ -643,7 +643,7 @@ class Document
         if ($document instanceof Document) {
             $element = $document->getElement();
         } else {
-            if (! $document instanceof \DOMDocument) {
+            if (false === ($document instanceof \DOMDocument)) {
                 throw new \InvalidArgumentException(\sprintf(
                     'Argument 1 passed to %s must be an instance of %s or DOMDocument, %s given.',
                     __METHOD__,

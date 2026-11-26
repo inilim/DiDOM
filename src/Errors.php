@@ -21,7 +21,7 @@ class Errors
     public static function disable(): void
     {
         self::$internalErrors = \libxml_use_internal_errors(true);
-        if (\LIBXML_VERSION < 20900) {
+        if (20900 > \LIBXML_VERSION) {
             self::$disableEntities = \libxml_disable_entity_loader(true);
         }
     }
@@ -31,11 +31,11 @@ class Errors
     public static function restore(bool $clear = true): void
     {
         self::$lastErrors = \libxml_get_errors();
-        if ($clear) {
+        if (true === $clear) {
             \libxml_clear_errors();
         }
         \libxml_use_internal_errors(self::$internalErrors);
-        if (\LIBXML_VERSION < 20900) {
+        if (20900 > \LIBXML_VERSION) {
             \libxml_disable_entity_loader(self::$disableEntities);
         }
     }

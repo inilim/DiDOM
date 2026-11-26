@@ -25,7 +25,7 @@ class ClassAttribute
      */
     public function __construct(Element $element)
     {
-        if (! $element->isElementNode()) {
+        if (false === $element->isElementNode()) {
             throw new \InvalidArgumentException(\sprintf('The element must contain DOMElement node.'));
         }
 
@@ -39,7 +39,7 @@ class ClassAttribute
      */
     protected function parseClassAttribute(): void
     {
-        if (! $this->element->hasAttribute('class')) {
+        if (false === $this->element->hasAttribute('class')) {
             // possible if class attribute has been removed
             if ('' !== $this->classesString) {
                 $this->classesString = '';
@@ -94,7 +94,7 @@ class ClassAttribute
     {
         $this->parseClassAttribute();
 
-        if (\in_array($className, $this->classes, true)) {
+        if (true === \in_array($className, $this->classes, true)) {
             return $this;
         }
 
@@ -115,11 +115,11 @@ class ClassAttribute
         $this->parseClassAttribute();
 
         foreach ($classNames as $className) {
-            if (! \is_string($className)) {
+            if (false === \is_string($className)) {
                 throw new \InvalidArgumentException(\sprintf('Class name must be a string, %s given.', (\is_object($className) ? \get_class($className) : \gettype($className))));
             }
 
-            if (\in_array($className, $this->classes, true)) {
+            if (true === \in_array($className, $this->classes, true)) {
                 continue;
             }
 
@@ -179,7 +179,7 @@ class ClassAttribute
         $this->parseClassAttribute();
 
         foreach ($classNames as $className) {
-            if (! \is_string($className)) {
+            if (false === \is_string($className)) {
                 throw new \InvalidArgumentException(\sprintf('Class name must be a string, %s given.', (\is_object($className) ? \get_class($className) : \gettype($className))));
             }
 
@@ -207,11 +207,11 @@ class ClassAttribute
         $preservedClasses = [];
 
         foreach ($preserved as $className) {
-            if (! \is_string($className)) {
+            if (false === \is_string($className)) {
                 throw new \InvalidArgumentException(\sprintf('Class name must be a string, %s given.', (\is_object($className) ? \get_class($className) : \gettype($className))));
             }
 
-            if (! \in_array($className, $this->classes, true)) {
+            if (false === \in_array($className, $this->classes, true)) {
                 continue;
             }
 
