@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace DiDom;
 
-use InvalidArgumentException;
-
 class ClassAttribute
 {
     /**
@@ -23,12 +21,12 @@ class ClassAttribute
     protected array $classes = [];
 
     /**
-     * @throws InvalidArgumentException if parameter 1 is not an element node
+     * @throws \InvalidArgumentException if parameter 1 is not an element node
      */
     public function __construct(Element $element)
     {
         if (! $element->isElementNode()) {
-            throw new InvalidArgumentException(\sprintf('The element must contain DOMElement node.'));
+            throw new \InvalidArgumentException(\sprintf('The element must contain DOMElement node.'));
         }
 
         $this->element = $element;
@@ -43,7 +41,7 @@ class ClassAttribute
     {
         if (! $this->element->hasAttribute('class')) {
             // possible if class attribute has been removed
-            if ($this->classesString !== '') {
+            if ('' !== $this->classesString) {
                 $this->classesString = '';
                 $this->classes = [];
             }
@@ -61,7 +59,7 @@ class ClassAttribute
 
         $classesString = \trim($this->classesString);
 
-        if ($classesString === '') {
+        if ('' === $classesString) {
             $this->classes = [];
 
             return;
@@ -90,7 +88,7 @@ class ClassAttribute
     }
 
     /**
-     * @throws InvalidArgumentException if class name is not a string
+     * @throws \InvalidArgumentException if class name is not a string
      */
     public function add(string $className): self
     {
@@ -110,7 +108,7 @@ class ClassAttribute
     /**
      * @param array $classNames
      *
-     * @throws InvalidArgumentException if class name is not a string
+     * @throws \InvalidArgumentException if class name is not a string
      */
     public function addMultiple(array $classNames): self
     {
@@ -118,7 +116,7 @@ class ClassAttribute
 
         foreach ($classNames as $className) {
             if (! \is_string($className)) {
-                throw new InvalidArgumentException(\sprintf('Class name must be a string, %s given.', (\is_object($className) ? \get_class($className) : \gettype($className))));
+                throw new \InvalidArgumentException(\sprintf('Class name must be a string, %s given.', (\is_object($className) ? \get_class($className) : \gettype($className))));
             }
 
             if (\in_array($className, $this->classes, true)) {
@@ -153,7 +151,7 @@ class ClassAttribute
     }
 
     /**
-     * @throws InvalidArgumentException if class name is not a string
+     * @throws \InvalidArgumentException if class name is not a string
      */
     public function remove(string $className): self
     {
@@ -161,7 +159,7 @@ class ClassAttribute
 
         $classIndex = \array_search($className, $this->classes);
 
-        if ($classIndex === false) {
+        if (false === $classIndex) {
             return $this;
         }
 
@@ -174,7 +172,7 @@ class ClassAttribute
 
     /**
      * @param array $classNames
-     * @throws InvalidArgumentException if class name is not a string
+     * @throws \InvalidArgumentException if class name is not a string
      */
     public function removeMultiple(array $classNames): self
     {
@@ -182,12 +180,12 @@ class ClassAttribute
 
         foreach ($classNames as $className) {
             if (! \is_string($className)) {
-                throw new InvalidArgumentException(\sprintf('Class name must be a string, %s given.', (\is_object($className) ? \get_class($className) : \gettype($className))));
+                throw new \InvalidArgumentException(\sprintf('Class name must be a string, %s given.', (\is_object($className) ? \get_class($className) : \gettype($className))));
             }
 
             $classIndex = \array_search($className, $this->classes);
 
-            if ($classIndex === false) {
+            if (false === $classIndex) {
                 continue;
             }
 
@@ -210,7 +208,7 @@ class ClassAttribute
 
         foreach ($preserved as $className) {
             if (! \is_string($className)) {
-                throw new InvalidArgumentException(\sprintf('Class name must be a string, %s given.', (\is_object($className) ? \get_class($className) : \gettype($className))));
+                throw new \InvalidArgumentException(\sprintf('Class name must be a string, %s given.', (\is_object($className) ? \get_class($className) : \gettype($className))));
             }
 
             if (! \in_array($className, $this->classes, true)) {

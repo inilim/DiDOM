@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace DiDom;
 
 use DiDom\Exceptions\InvalidSelectorException;
-use InvalidArgumentException;
-use RuntimeException;
 
 class Query
 {
@@ -35,17 +33,17 @@ class Query
      */
     public static function compile(string $expression, string $type = self::TYPE_CSS): string
     {
-        if (\strcasecmp($type, self::TYPE_XPATH) !== 0 && \strcasecmp($type, self::TYPE_CSS) !== 0) {
-            throw new RuntimeException(\sprintf('Unknown expression type "%s".', $type));
+        if (0 !== \strcasecmp($type, self::TYPE_XPATH) && 0 !== \strcasecmp($type, self::TYPE_CSS)) {
+            throw new \RuntimeException(\sprintf('Unknown expression type "%s".', $type));
         }
 
         $expression = \trim($expression);
 
-        if ($expression === '') {
+        if ('' === $expression) {
             throw new InvalidSelectorException('The expression must not be empty.');
         }
 
-        if (\strcasecmp($type, self::TYPE_XPATH) === 0) {
+        if (0 === \strcasecmp($type, self::TYPE_XPATH)) {
             return $expression;
         }
 
@@ -70,10 +68,10 @@ class Query
     {
         $paths = [];
 
-        while ($selector !== '') {
+        while ('' !== $selector) {
             list($xpath, $selector) = static::parseAndConvertSelector($selector, $prefix);
 
-            if (\substr($selector, 0, 1) === ',') {
+            if (',' === \substr($selector, 0, 1)) {
                 $selector = \trim($selector, ', ');
             }
 
@@ -93,7 +91,7 @@ class Query
      */
     protected static function parseAndConvertSelector(string $selector, string $prefix = '//'): array
     {
-        if (\substr($selector, 0, 1) === '>') {
+        if ('>' === \substr($selector, 0, 1)) {
             $prefix = '/';
 
             $selector = \ltrim($selector, '> ');
@@ -108,7 +106,7 @@ class Query
             $selector = \trim(\substr($selector, \strlen($segments['selector'])));
             $prefix = isset($segments['rel']) ? '/' : '//';
 
-            if ($selector === '' || \substr($selector, 0, 2) === '::' || \substr($selector, 0, 1) === ',') {
+            if ('' === $selector || '::' === \substr($selector, 0, 2) || ',' === \substr($selector, 0, 1)) {
                 break;
             }
 
@@ -116,7 +114,7 @@ class Query
         }
 
         // if selector has property
-        if (\substr($selector, 0, 2) === '::') {
+        if ('::' === \substr($selector, 0, 2)) {
             $property = self::parseProperty($selector);
             $propertyXpath = self::convertProperty($property['name'], $property['args']);
 
@@ -143,7 +141,7 @@ class Query
 
         $regexp = '/^::' . $name . $args . '/is';
 
-        if (\preg_match($regexp, $selector, $matches) !== 1) {
+        if (1 !== \preg_match($regexp, $selector, $matches)) {
             throw new InvalidSelectorException(\sprintf('Invalid property "%s".', $selector));
         }
 
@@ -168,12 +166,12 @@ class Query
      */
     protected static function convertProperty(string $name, array $parameters = []): string
     {
-        if ($name === 'text') {
+        if ('text' === $name) {
             return 'text()';
         }
 
-        if ($name === 'attr') {
-            if (\count($parameters) === 0) {
+        if ('attr' === $name) {
+            if (0 === \count($parameters)) {
                 return '@*';
             }
 
@@ -215,25 +213,25 @@ class Query
             case 'contains':
                 $string = \trim($parameters[0], '\'"');
 
-                if (\count($parameters) === 1) {
+                if (1 === \count($parameters)) {
                     return self::convertContains($string);
                 }
 
-                if ($parameters[1] !== 'true' && $parameters[1] !== 'false') {
+                if ('true' !== $parameters[1] && 'false' !== $parameters[1]) {
                     throw new InvalidSelectorException(\sprintf('Parameter 2 of "contains" pseudo-class must be equal true or false, "%s" given.', $parameters[1]));
                 }
 
-                $caseSensitive = $parameters[1] === 'true';
+                $caseSensitive = 'true' === $parameters[1];
 
-                if (\count($parameters) === 2) {
+                if (2 === \count($parameters)) {
                     return self::convertContains($string, $caseSensitive);
                 }
 
-                if ($parameters[2] !== 'true' && $parameters[2] !== 'false') {
+                if ('true' !== $parameters[2] && 'false' !== $parameters[2]) {
                     throw new InvalidSelectorException(\sprintf('Parameter 3 of "contains" pseudo-class must be equal true or false, "%s" given.', $parameters[2]));
                 }
 
-                $fullMatch = $parameters[2] === 'true';
+                $fullMatch = 'true' === $parameters[2];
 
                 return self::convertContains($string, $caseSensitive, $fullMatch);
             case 'has':
@@ -258,7 +256,7 @@ class Query
      *
      * @return string XPath expression
      *
-     * @throws InvalidArgumentException if you neither specify tag name nor attributes
+     * @throws \InvalidArgumentException if you neither specify tag name nor attributes
      */
     public static function buildXpath(array $segments, string $prefix = '//'): string
     {
@@ -288,7 +286,7 @@ class Query
         // if the pseudo class specified
         if (\array_key_exists('pseudo', $segments)) {
             foreach ($segments['pseudo'] as $pseudo) {
-                $expression = $pseudo['expression'] !== null ? $pseudo['expression'] : '';
+                $expression = null !== $pseudo['expression'] ? $pseudo['expression'] : '';
 
                 $parameters = \explode(',', $expression);
                 $parameters = \array_map('trim', $parameters);
@@ -297,13 +295,13 @@ class Query
             }
         }
 
-        if (\count($attributes) === 0 && ! isset($segments['tag'])) {
-            throw new InvalidArgumentException('The array of segments must contain the name of the tag or at least one attribute.');
+        if (0 === \count($attributes) && ! isset($segments['tag'])) {
+            throw new \InvalidArgumentException('The array of segments must contain the name of the tag or at least one attribute.');
         }
 
         $xpath = $prefix . $tagName;
 
-        if ($count = \count($attributes)) {
+        if (0 !== ($count = \count($attributes))) {
             $xpath .= ($count > 1) ? \sprintf('[(%s)]', \implode(') and (', $attributes)) : \sprintf('[%s]', $attributes[0]);
         }
 
@@ -323,22 +321,22 @@ class Query
 
         if ($isSimpleSelector) {
             // if specified only the attribute name
-            $xpath = $value === null ? '@' . $name : \sprintf('@%s="%s"', $name, $value);
+            $xpath = null === $value ? '@' . $name : \sprintf('@%s="%s"', $name, $value);
 
             return $xpath;
         }
 
         // if the attribute name starts with ^
         // example: *[^data-]
-        if (\substr($name, 0, 1) === '^') {
+        if ('^' === \substr($name, 0, 1)) {
             $xpath = \sprintf('@*[starts-with(name(), "%s")]', \substr($name, 1));
 
-            return $value === null ? $xpath : \sprintf('%s="%s"', $xpath, $value);
+            return null === $value ? $xpath : \sprintf('%s="%s"', $xpath, $value);
         }
 
         // if the attribute name starts with !
         // example: input[!disabled]
-        if (\substr($name, 0, 1) === '!') {
+        if ('!' === \substr($name, 0, 1)) {
             $xpath = \sprintf('not(@%s)', \substr($name, 1));
 
             return $xpath;
@@ -384,15 +382,15 @@ class Query
      */
     protected static function convertNthExpression(string $expression): string
     {
-        if ($expression === '') {
+        if ('' === $expression) {
             throw new InvalidSelectorException('nth-child (or nth-last-child) expression must not be empty.');
         }
 
-        if ($expression === 'odd') {
+        if ('odd' === $expression) {
             return 'position() mod 2 = 1 and position() >= 1';
         }
 
-        if ($expression === 'even') {
+        if ('even' === $expression) {
             return 'position() mod 2 = 0 and position() >= 0';
         }
 
@@ -402,8 +400,8 @@ class Query
 
         if (\preg_match("/^(?P<mul>[0-9]?n)(?:(?P<sign>\+|\-)(?P<pos>[0-9]+))?$/is", $expression, $segments)) {
             if (isset($segments['mul'])) {
-                $multiplier = $segments['mul'] === 'n' ? 1 : \trim($segments['mul'], 'n');
-                $sign = (isset($segments['sign']) && $segments['sign'] === '+') ? '-' : '+';
+                $multiplier = 'n' === $segments['mul'] ? 1 : \trim($segments['mul'], 'n');
+                $sign = (isset($segments['sign']) && '+' === $segments['sign']) ? '-' : '+';
                 $position = isset($segments['pos']) ? $segments['pos'] : 0;
 
                 return \sprintf('(position() %s %d) mod %d = 0 and position() >= %d', $sign, $position, $multiplier, $position);
@@ -451,24 +449,24 @@ class Query
     {
         $selector = \trim($selector);
 
-        if ($selector === '') {
+        if ('' === $selector) {
             throw new InvalidSelectorException('The selector must not be empty.');
         }
 
         $pregMatchResult = \preg_match(self::getSelectorRegex(), $selector, $segments);
 
-        if ($pregMatchResult === false || $pregMatchResult === 0 || $segments[0] === '') {
+        if (false === $pregMatchResult || 0 === $pregMatchResult || '' === $segments[0]) {
             throw new InvalidSelectorException(\sprintf('Invalid selector "%s".', $selector));
         }
 
         $result = ['selector' => $segments[0]];
 
-        if (isset($segments['tag']) && $segments['tag'] !== '') {
+        if (isset($segments['tag']) && '' !== $segments['tag']) {
             $result['tag'] = $segments['tag'];
         }
 
         // if the id attribute specified
-        if (isset($segments['id']) && $segments['id'] !== '') {
+        if (isset($segments['id']) && '' !== $segments['id']) {
             $result['id'] = $segments['id'];
         }
 
@@ -478,10 +476,10 @@ class Query
             $attributes = \explode('][', $attributes);
 
             foreach ($attributes as $attribute) {
-                if ($attribute !== '') {
+                if ('' !== $attribute) {
                     list($name, $value) = \array_pad(\explode('=', $attribute, 2), 2, null);
 
-                    if ($name === '') {
+                    if ('' === $name) {
                         throw new InvalidSelectorException(\sprintf('Invalid selector "%s": attribute name must not be empty.', $selector));
                     }
 
@@ -497,14 +495,14 @@ class Query
             $classes = \explode('.', $classes);
 
             foreach ($classes as $class) {
-                if ($class !== '') {
+                if ('' !== $class) {
                     $result['classes'][] = $class;
                 }
             }
         }
 
         // if the pseudo class specified
-        if (isset($segments['pseudo']) && $segments['pseudo'] !== '') {
+        if (isset($segments['pseudo']) && '' !== $segments['pseudo']) {
             \preg_match_all('/:(?P<type>[\w\-]+)(?:\((?P<expr>[^\)]+)\))?/', $segments['pseudo'], $pseudoClasses);
 
             $result['pseudo'] = [];
@@ -512,7 +510,7 @@ class Query
             foreach ($pseudoClasses['type'] as $index => $pseudoType) {
                 $result['pseudo'][] = [
                     'type' => $pseudoType,
-                    'expression' => $pseudoClasses['expr'][$index] !== '' ? $pseudoClasses['expr'][$index] : null,
+                    'expression' => '' !== $pseudoClasses['expr'][$index] ? $pseudoClasses['expr'][$index] : null,
                 ];
             }
         }
@@ -550,7 +548,7 @@ class Query
     /**
      * @param array $compiled
      *
-     * @throws InvalidArgumentException if the attributes is not an array
+     * @throws \InvalidArgumentException if the attributes is not an array
      */
     public static function setCompiled(array $compiled): void
     {

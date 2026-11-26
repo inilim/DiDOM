@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace DiDom;
 
-use InvalidArgumentException;
-
 class StyleAttribute
 {
     /**
@@ -21,12 +19,12 @@ class StyleAttribute
     protected array $properties = [];
 
     /**
-     * @throws InvalidArgumentException if parameter 1 is not an element node
+     * @throws \InvalidArgumentException if parameter 1 is not an element node
      */
     public function __construct(Element $element)
     {
         if (! $element->isElementNode()) {
-            throw new InvalidArgumentException(\sprintf('The element must contain DOMElement node.'));
+            throw new \InvalidArgumentException(\sprintf('The element must contain DOMElement node.'));
         }
 
         $this->element = $element;
@@ -41,7 +39,7 @@ class StyleAttribute
     {
         if (! $this->element->hasAttribute('style')) {
             // possible if style attribute has been removed
-            if ($this->styleString !== '') {
+            if ('' !== $this->styleString) {
                 $this->styleString = '';
                 $this->properties = [];
             }
@@ -59,7 +57,7 @@ class StyleAttribute
 
         $styleString = \trim($this->styleString, ' ;');
 
-        if ($styleString === '') {
+        if ('' === $styleString) {
             $this->properties = [];
 
             return;
@@ -102,8 +100,8 @@ class StyleAttribute
      * @param string $name
      * @param string $value
      *
-     * @throws InvalidArgumentException if property name is not a string
-     * @throws InvalidArgumentException if property value is not a string
+     * @throws \InvalidArgumentException if property name is not a string
+     * @throws \InvalidArgumentException if property value is not a string
      */
     public function setProperty(string $name, string $value): self
     {
@@ -119,8 +117,8 @@ class StyleAttribute
     /**
      * @param array $properties
      *
-     * @throws InvalidArgumentException if property name is not a string
-     * @throws InvalidArgumentException if property value is not a string
+     * @throws \InvalidArgumentException if property name is not a string
+     * @throws \InvalidArgumentException if property value is not a string
      */
     public function setMultipleProperties(array $properties): self
     {
@@ -128,11 +126,11 @@ class StyleAttribute
 
         foreach ($properties as $propertyName => $value) {
             if (! \is_string($propertyName)) {
-                throw new InvalidArgumentException(\sprintf('Property name must be a string, %s given.', (\is_object($propertyName) ? \get_class($propertyName) : \gettype($propertyName))));
+                throw new \InvalidArgumentException(\sprintf('Property name must be a string, %s given.', (\is_object($propertyName) ? \get_class($propertyName) : \gettype($propertyName))));
             }
 
             if (! \is_string($value)) {
-                throw new InvalidArgumentException(\sprintf('Property value must be a string, %s given.', (\is_object($value) ? \get_class($value) : \gettype($value))));
+                throw new \InvalidArgumentException(\sprintf('Property value must be a string, %s given.', (\is_object($value) ? \get_class($value) : \gettype($value))));
             }
 
             $this->properties[$propertyName] = $value;
@@ -165,7 +163,7 @@ class StyleAttribute
      *
      * @return array
      *
-     * @throws InvalidArgumentException if property name is not a string
+     * @throws \InvalidArgumentException if property name is not a string
      */
     public function getMultipleProperties(array $propertyNames): array
     {
@@ -175,7 +173,7 @@ class StyleAttribute
 
         foreach ($propertyNames as $propertyName) {
             if (! \is_string($propertyName)) {
-                throw new InvalidArgumentException(\sprintf('Property name must be a string, %s given.', (\is_object($propertyName) ? \get_class($propertyName) : \gettype($propertyName))));
+                throw new \InvalidArgumentException(\sprintf('Property name must be a string, %s given.', (\is_object($propertyName) ? \get_class($propertyName) : \gettype($propertyName))));
             }
 
             if (\array_key_exists($propertyName, $this->properties)) {
@@ -204,7 +202,7 @@ class StyleAttribute
     }
 
     /**
-     * @throws InvalidArgumentException if property name is not a string
+     * @throws \InvalidArgumentException if property name is not a string
      */
     public function removeProperty(string $name): self
     {
@@ -219,7 +217,7 @@ class StyleAttribute
 
     /**
      * @param array $propertyNames
-     * @throws InvalidArgumentException if property name is not a string
+     * @throws \InvalidArgumentException if property name is not a string
      */
     public function removeMultipleProperties(array $propertyNames): self
     {
@@ -227,7 +225,7 @@ class StyleAttribute
 
         foreach ($propertyNames as $propertyName) {
             if (! \is_string($propertyName)) {
-                throw new InvalidArgumentException(\sprintf('Property name must be a string, %s given.', (\is_object($propertyName) ? \get_class($propertyName) : \gettype($propertyName))));
+                throw new \InvalidArgumentException(\sprintf('Property name must be a string, %s given.', (\is_object($propertyName) ? \get_class($propertyName) : \gettype($propertyName))));
             }
 
             unset($this->properties[$propertyName]);
@@ -249,7 +247,7 @@ class StyleAttribute
 
         foreach ($preserved as $propertyName) {
             if (! \is_string($propertyName)) {
-                throw new InvalidArgumentException(\sprintf('Property name must be a string, %s given.', (\is_object($propertyName) ? \get_class($propertyName) : \gettype($propertyName))));
+                throw new \InvalidArgumentException(\sprintf('Property name must be a string, %s given.', (\is_object($propertyName) ? \get_class($propertyName) : \gettype($propertyName))));
             }
 
             if (! \array_key_exists($propertyName, $this->properties)) {

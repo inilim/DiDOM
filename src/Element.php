@@ -5,15 +5,6 @@ declare(strict_types=1);
 namespace DiDom;
 
 use DiDom\Exceptions\InvalidSelectorException;
-use DOMCdataSection;
-use DOMComment;
-use DOMDocument;
-use DOMElement;
-use DOMNode;
-use DOMText;
-use InvalidArgumentException;
-use LogicException;
-use RuntimeException;
 
 class Element extends Node
 {
@@ -22,14 +13,14 @@ class Element extends Node
     protected ?StyleAttribute $styleAttribute = null;
 
     /**
-     * @param DOMElement|DOMText|DOMComment|DOMCdataSection|string $tagName The tag name of an element
+     * @param \DOMElement|\DOMText|\DOMComment|\DOMCdataSection|string $tagName The tag name of an element
      * @param string|integer|float|null $value The value of an element
      * @param array $attributes The attributes of an element
      */
     public function __construct($tagName, $value = null, array $attributes = [])
     {
         if (\is_string($tagName)) {
-            $document = new DOMDocument('1.0', 'UTF-8');
+            $document = new \DOMDocument('1.0', 'UTF-8');
             $node = $document->createElement($tagName);
 
             $this->setNode($node);
@@ -37,7 +28,7 @@ class Element extends Node
             $this->setNode($tagName);
         }
 
-        if ($value !== null) {
+        if (null !== $value) {
             $this->setValue($value);
         }
 
@@ -49,7 +40,7 @@ class Element extends Node
     /**
      * Creates a new element.
      *
-     * @param DOMNode|string $name The tag name of an element
+     * @param \DOMNode|string $name The tag name of an element
      * @param string|integer|float|null $value The value of an element
      * @param array $attributes The attributes of an element
      */
@@ -84,16 +75,16 @@ class Element extends Node
      * @param bool $strict
      *
      * @throws InvalidSelectorException if the selector is invalid
-     * @throws InvalidArgumentException if the tag name is not a string
-     * @throws RuntimeException if the tag name is not specified in strict mode
+     * @throws \InvalidArgumentException if the tag name is not a string
+     * @throws \RuntimeException if the tag name is not specified in strict mode
      */
     public function matches(string $selector, bool $strict = false): bool
     {
-        if (! $this->node instanceof DOMElement) {
+        if (! $this->node instanceof \DOMElement) {
             return false;
         }
 
-        if ($selector === '*') {
+        if ('*' === $selector) {
             return true;
         }
 
@@ -103,7 +94,7 @@ class Element extends Node
             $selector = 'root > ' . \trim($selector);
 
             $document = new Document();
-            $document->loadHtml($html, LIBXML_HTML_NODEFDTD | LIBXML_HTML_NOIMPLIED);
+            $document->loadHtml($html, \LIBXML_HTML_NODEFDTD | \LIBXML_HTML_NOIMPLIED);
 
             return $document->has($selector);
         }
@@ -111,10 +102,10 @@ class Element extends Node
         $segments = Query::getSegments($selector);
 
         if (! \array_key_exists('tag', $segments)) {
-            throw new RuntimeException(\sprintf('Tag name must be specified in %s', $selector));
+            throw new \RuntimeException(\sprintf('Tag name must be specified in %s', $selector));
         }
 
-        if ($segments['tag'] !== $this->tagName() && $segments['tag'] !== '*') {
+        if ($segments['tag'] !== $this->tagName() && '*' !== $segments['tag']) {
             return false;
         }
 
@@ -174,7 +165,7 @@ class Element extends Node
         }
 
         if (! \is_string($value)) {
-            throw new InvalidArgumentException(\sprintf(
+            throw new \InvalidArgumentException(\sprintf(
                 '%s expects parameter 2 to be string or null, %s given.',
                 __METHOD__,
                 (\is_object($value) ? \get_class($value) : \gettype($value))
@@ -222,7 +213,7 @@ class Element extends Node
      */
     public function removeAllAttributes(array $preserved = []): self
     {
-        if (! $this->node instanceof DOMElement) {
+        if (! $this->node instanceof \DOMElement) {
             return $this;
         }
 
@@ -247,7 +238,7 @@ class Element extends Node
      */
     public function attr(string $name, ?string $value = null)
     {
-        if ($value === null) {
+        if (null === $value) {
             return $this->getAttribute($name);
         }
 
@@ -263,11 +254,11 @@ class Element extends Node
      */
     public function attributes(?array $names = null): ?array
     {
-        if (! $this->node instanceof DOMElement) {
+        if (! $this->node instanceof \DOMElement) {
             return null;
         }
 
-        if ($names === null) {
+        if (null === $names) {
             $result = [];
 
             foreach ($this->node->attributes as $name => $attribute) {
@@ -289,16 +280,16 @@ class Element extends Node
     }
 
     /**
-     * @throws LogicException if the node is not an instance of DOMElement
+     * @throws \LogicException if the node is not an instance of DOMElement
      */
     public function classes(): ClassAttribute
     {
-        if ($this->classAttribute !== null) {
+        if (null !== $this->classAttribute) {
             return $this->classAttribute;
         }
 
         if (! $this->isElementNode()) {
-            throw new LogicException('Class attribute is available only for element nodes.');
+            throw new \LogicException('Class attribute is available only for element nodes.');
         }
 
         $this->classAttribute = new ClassAttribute($this);
@@ -307,16 +298,16 @@ class Element extends Node
     }
 
     /**
-     * @throws LogicException if the node is not an instance of DOMElement
+     * @throws \LogicException if the node is not an instance of DOMElement
      */
     public function style(): StyleAttribute
     {
-        if ($this->styleAttribute !== null) {
+        if (null !== $this->styleAttribute) {
             return $this->styleAttribute;
         }
 
         if (! $this->isElementNode()) {
-            throw new LogicException('Style attribute is available only for element nodes.');
+            throw new \LogicException('Style attribute is available only for element nodes.');
         }
 
         $this->styleAttribute = new StyleAttribute($this);

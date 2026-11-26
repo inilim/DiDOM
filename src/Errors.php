@@ -57,7 +57,7 @@ class Errors
      */
     public static function getFormattedErrors(): string
     {
-        if (self::$lastErrors === []) {
+        if ([] === self::$lastErrors) {
             throw new \RuntimeException('No errors to format.');
         }
         $levelNames = [
