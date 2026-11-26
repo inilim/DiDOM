@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace DiDom;
 
+/**
+ * @internal DiDom
+ */
 class Errors
 {
     protected static bool $internalErrors;

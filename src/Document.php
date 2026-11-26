@@ -737,6 +737,6 @@ class Document
      */
     public function hasErrors(): bool
     {
-        return \count(Errors::getLastErrors()) > 0;
+        return [] !== Errors::getLastErrors();
     }
 }
