@@ -58,7 +58,6 @@ class DocumentTest extends TestCase
     {
         $html = $this->loadFixture('posts.html');
         $document = new Document($html, false);
-
         $element  = $document->createElement('span', 'value');
 
         $this->assertInstanceOf('DiDom\Element', $element);
@@ -144,6 +143,7 @@ class DocumentTest extends TestCase
         $this->expectExceptionMessage('Argument 1 passed to DiDom\Document::appendChild must be an instance of DiDom\Element or DOMNode, string given.');
 
         $html = $this->loadFixture('posts.html');
+
         $document = new Document($html);
 
         $document->appendChild('foo');
@@ -158,7 +158,6 @@ class DocumentTest extends TestCase
     <title>Document</title>
 </head>
 <body>
-
 </body>
 </html>';
 
@@ -180,7 +179,6 @@ class DocumentTest extends TestCase
         $nodes[] = $document->createElement('span');
 
         $appendedChildren = $document->appendChild($nodes);
-
         $nodes = $document->find('span');
 
         $this->assertCount(2, $appendedChildren);
@@ -197,6 +195,7 @@ class DocumentTest extends TestCase
         $this->expectExceptionMessage('Could not load file path/to/file.');
 
         $document = new Document();
+
         $document->load('path/to/file', true);
     }
 
@@ -206,6 +205,7 @@ class DocumentTest extends TestCase
         $this->expectExceptionMessage('Document type must be "xml" or "html", bar given.');
 
         $document = new Document();
+
         $document->load('foo', false, 'bar');
     }
 
@@ -250,6 +250,7 @@ class DocumentTest extends TestCase
         $this->expectExceptionMessage('Could not load file path/to/file.');
 
         $document = new Document();
+
         $document->loadHtmlFile('path/to/file');
     }
 
@@ -259,6 +260,7 @@ class DocumentTest extends TestCase
         $this->expectExceptionMessage('Could not load file path/to/file.');
 
         $document = new Document();
+
         $document->loadXmlFile('path/to/file');
     }
 
@@ -318,7 +320,6 @@ class DocumentTest extends TestCase
     public function testFindText()
     {
         $html = $this->loadFixture('menu.html');
-
         $document = new Document($html);
 
         $texts = $document->find('//a/text()', Query::TYPE_XPATH);
@@ -331,21 +332,18 @@ class DocumentTest extends TestCase
     public function testFindComment()
     {
         $html = $this->loadFixture('menu.html');
-
         $document = new Document($html);
 
         $comment = $document->xpath('/html/body/ul/li/a/comment()');
 
         $this->assertTrue($comment[0]->isCommentNode());
         $this->assertTrue($comment[1]->isCommentNode());
-
         $this->assertTrue(is_array($comment));
         $this->assertEquals(2, count($comment));
 
         $comment = $document->xpath('/html/body/comment()');
 
         $this->assertTrue($comment[0]->isCommentNode());
-
         $this->assertTrue(is_array($comment));
         $this->assertEquals(1, count($comment));
     }
@@ -353,7 +351,6 @@ class DocumentTest extends TestCase
     public function testFindAttribute()
     {
         $html = $this->loadFixture('menu.html');
-
         $document = new Document($html);
 
         $links = $document->find('//a/@href', Query::TYPE_XPATH);
@@ -447,6 +444,7 @@ class DocumentTest extends TestCase
     public function testCreateXpath()
     {
         $document = new Document();
+
         $xpath = $document->createXpath();
 
         $this->assertInstanceOf('DOMXPath', $xpath);
@@ -458,16 +456,16 @@ class DocumentTest extends TestCase
         $html = '<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Document</title>
+    <meta charset="UTF-8">
+    <title>Document</title>
 </head>
 <body>
-English language <br>
-Русский язык <br>
-اللغة العربية <br>
-漢語 <br>
-Tiếng Việt <br>
-&lt; &gt;
+    English language <br>
+    Русский язык <br>
+    اللغة العربية <br>
+    漢語 <br>
+    Tiếng Việt <br>
+    &lt; &gt;
 </body>
 </html>';
 
@@ -500,7 +498,6 @@ Tiếng Việt <br>
     public function testFormat()
     {
         $html = $this->loadFixture('posts.html');
-
         $document = new Document($html, false);
 
         $this->assertFalse($document->getDocument()->formatOutput);
@@ -513,7 +510,6 @@ Tiếng Việt <br>
     public function testText()
     {
         $html = '<html>foo</html>';
-
         $document = new Document($html, false);
 
         $this->assertEquals('foo', $document->text());
@@ -524,6 +520,7 @@ Tiếng Việt <br>
         $this->expectException(InvalidArgumentException::class);
 
         $document = new Document();
+
         $document->is(null);
     }
 
@@ -618,6 +615,7 @@ Tiếng Việt <br>
         $this->expectException(RuntimeException::class);
 
         $document = new Document();
+
         $document->toElement();
     }
 
@@ -652,45 +650,54 @@ Tiếng Việt <br>
     public function testLoadStatusWithEmptyDocument()
     {
         $document = new Document();
+
         $this->assertFalse($document->loadStatus());
     }
 
     public function testLoadStatusAfterSuccessfulHtmlLoad()
     {
         $document = new Document();
+
         $this->assertFalse($document->loadStatus());
 
         $document->loadHtml('<html><body><p>Hello</p></body></html>');
+
         $this->assertTrue($document->loadStatus());
     }
 
     public function testLoadStatusAfterSuccessfulXmlLoad()
     {
         $document = new Document();
+
         $this->assertFalse($document->loadStatus());
 
         $document->loadXml('<?xml version="1.0"?><root><item>Test</item></root>');
+
         $this->assertTrue($document->loadStatus());
     }
 
     public function testLoadStatusAfterFailedXmlLoad()
     {
         $document = new Document();
+
         $this->assertFalse($document->loadStatus());
 
         $document->loadXml('this is not valid xml <<<<>>>');
+
         $this->assertFalse($document->loadStatus());
     }
 
     public function testLoadStatusWithValidHtmlInConstructor()
     {
         $document = new Document('<html><body>Test</body></html>');
+
         $this->assertTrue($document->loadStatus());
     }
 
     public function testLoadStatusWithValidXmlInConstructor()
     {
         $document = new Document('<?xml version="1.0"?><root/>', false, 'UTF-8', Document::TYPE_XML);
+
         $this->assertTrue($document->loadStatus());
     }
 
@@ -700,14 +707,15 @@ Tiếng Việt <br>
         $domDocument->loadHTML('<html><body>Test</body></html>');
 
         $document = new Document($domDocument);
+
         $this->assertTrue($document->loadStatus());
     }
 
     public function testLoadStatusWithEmptyDomDocument()
     {
         $domDocument = new DOMDocument();
-
         $document = new Document($domDocument);
+
         $this->assertFalse($document->loadStatus());
     }
 
@@ -721,5 +729,122 @@ Tiếng Việt <br>
 
         $document->loadHtml('<html><body>Second</body></html>');
         $this->assertTrue($document->loadStatus());
+    }
+
+    // =========================
+    // getErrors / hasErrors tests
+    // =========================
+
+    public function testGetErrorsReturnsArray()
+    {
+        $document = new Document('<html><body>Test</body></html>');
+
+        $errors = $document->getErrors();
+
+        $this->assertIsArray($errors);
+    }
+
+    public function testGetErrorsAfterSuccessfulLoad()
+    {
+        $document = new Document();
+        $document->loadXml('<?xml version="1.0"?><root><item>Test</item></root>');
+
+        $errors = $document->getErrors();
+
+        $this->assertIsArray($errors);
+        $this->assertCount(0, $errors);
+    }
+
+    public function testGetErrorsAfterFailedXmlLoad()
+    {
+        $document = new Document();
+        $document->loadXml('this is not valid xml <<<<>>>');
+
+        $errors = $document->getErrors();
+
+        $this->assertIsArray($errors);
+        $this->assertGreaterThan(0, \count($errors));
+
+        foreach ($errors as $error) {
+            $this->assertInstanceOf(\LibXMLError::class, $error);
+        }
+    }
+
+    public function testGetErrorsAfterFailedXmlLoadContainsDetails()
+    {
+        $document = new Document();
+        $document->loadXml('<root><unclosed></root>');
+
+        $errors = $document->getErrors();
+
+        $this->assertGreaterThan(0, \count($errors));
+
+        $firstError = $errors[0];
+        $this->assertObjectHasProperty('level', $firstError);
+        $this->assertObjectHasProperty('message', $firstError);
+        $this->assertObjectHasProperty('line', $firstError);
+        $this->assertObjectHasProperty('column', $firstError);
+    }
+
+    public function testHasErrorsReturnsFalseAfterSuccessfulLoad()
+    {
+        $document = new Document();
+        $document->loadXml('<?xml version="1.0"?><root><item>Test</item></root>');
+
+        $this->assertFalse($document->hasErrors());
+    }
+
+    public function testHasErrorsReturnsTrueAfterFailedLoad()
+    {
+        $document = new Document();
+        $document->loadXml('this is not valid xml <<<<>>>');
+
+        $this->assertTrue($document->hasErrors());
+    }
+
+    public function testHasErrorsReturnsFalseForValidHtml()
+    {
+        $document = new Document('<html><body><p>Hello</p></body></html>');
+
+        $this->assertFalse($document->hasErrors());
+    }
+
+    public function testGetErrorsDoesNotAffectLoadStatus()
+    {
+        $document = new Document();
+        $document->loadXml('invalid xml <<<<>>>');
+
+        // loadStatus should still be false
+        $this->assertFalse($document->loadStatus());
+
+        // getErrors should still work
+        $errors = $document->getErrors();
+        $this->assertIsArray($errors);
+    }
+
+    public function testGetErrorsAfterReload()
+    {
+        $document = new Document();
+
+        // First load - invalid
+        $document->loadXml('invalid xml <<<<>>>');
+        $this->assertTrue($document->hasErrors());
+        $this->assertGreaterThan(0, \count($document->getErrors()));
+
+        // Second load - valid
+        $document->loadXml('<?xml version="1.0"?><root/>');
+        $this->assertFalse($document->hasErrors());
+        $this->assertCount(0, $document->getErrors());
+    }
+
+    public function testGetErrorsWithHtmlDocument()
+    {
+        $document = new Document();
+        $document->loadHtml('<html><body>Valid HTML</body></html>');
+
+        $errors = $document->getErrors();
+
+        $this->assertIsArray($errors);
+        $this->assertFalse($document->hasErrors());
     }
 }

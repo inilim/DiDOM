@@ -11,6 +11,11 @@ class Errors
     protected static bool $disableEntities;
 
     /**
+     * @var \LibXMLError[]
+     */
+    protected static array $lastErrors = [];
+
+    /**
      * Disable error reporting.
      */
     public static function disable(): void
@@ -27,6 +32,8 @@ class Errors
      */
     public static function restore(bool $clear = true): void
     {
+        self::$lastErrors = \libxml_get_errors();
+
         if ($clear) {
             \libxml_clear_errors();
         }
@@ -36,5 +43,15 @@ class Errors
         if (\LIBXML_VERSION < 20900) {
             \libxml_disable_entity_loader(self::$disableEntities);
         }
+    }
+
+    /**
+     * Returns the last errors collected during document loading.
+     *
+     * @return \LibXMLError[]
+     */
+    public static function getLastErrors(): array
+    {
+        return self::$lastErrors;
     }
 }

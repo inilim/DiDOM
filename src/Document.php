@@ -61,6 +61,7 @@ class Document
 
         $this->loadStatus = false;
         $this->encoding = $encoding;
+
         $this->document = new DOMDocument('1.0', $encoding);
         $this->preserveWhiteSpace(false);
 
@@ -176,6 +177,7 @@ class Document
 
         if (! \is_array($nodes)) {
             $nodes = [$nodes];
+
             $returnArray = false;
         }
 
@@ -433,6 +435,7 @@ class Document
     public function single(string $expression, string $type = Query::TYPE_CSS, bool $wrapNode = true, $contextNode = null)
     {
         $els = $this->find($expression, $type, $wrapNode, $contextNode);
+
         $count = \count($els);
 
         if (0 === $count) {
@@ -467,6 +470,7 @@ class Document
     public function singleOrNot(string $expression, string $type = Query::TYPE_CSS, bool $wrapNode = true, $contextNode = null)
     {
         $els = $this->find($expression, $type, $wrapNode, $contextNode);
+
         $count = \count($els);
 
         if (0 === $count) {
@@ -716,5 +720,23 @@ class Document
     public function __toString(): string
     {
         return $this->type === Document::TYPE_HTML ? $this->html() : $this->xml();
+    }
+
+    /**
+     * Returns the errors collected during the last document loading.
+     *
+     * @return \LibXMLError[]
+     */
+    public function getErrors(): array
+    {
+        return Errors::getLastErrors();
+    }
+
+    /**
+     * Checks if there were errors during the last document loading.
+     */
+    public function hasErrors(): bool
+    {
+        return \count(Errors::getLastErrors()) > 0;
     }
 }
