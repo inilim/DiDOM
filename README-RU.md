@@ -352,7 +352,7 @@ $element->setInnerHtml('<a href="#">Foo</a>');
 ```php
 $element->setInnerXml(' Foo <span>Bar</span><!-- Baz --><![CDATA[
 <root>Hello world!</root>
-]]');
+]]>');
 ```
 
 ### Изменение значения (как простой текст)
