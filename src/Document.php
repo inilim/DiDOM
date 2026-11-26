@@ -29,11 +29,11 @@ class Document
 
     protected DOMDocument $document;
 
-    protected string $type;
+    protected ?string $type = null;
 
-    protected string $encoding;
+    protected ?string $encoding = null;
 
-    protected bool $loadStatus;
+    protected bool $loadStatus = false;
 
     /**
      * @var array<string,string>
@@ -55,15 +55,13 @@ class Document
         if ($string instanceof DOMDocument) {
             $this->document = $string;
             $this->loadStatus = $string->documentElement !== null;
+
             return;
         }
 
         $this->loadStatus = false;
-
         $this->encoding = $encoding;
-
         $this->document = new DOMDocument('1.0', $encoding);
-
         $this->preserveWhiteSpace(false);
 
         if ($string !== null) {
@@ -178,7 +176,6 @@ class Document
 
         if (! \is_array($nodes)) {
             $nodes = [$nodes];
-
             $returnArray = false;
         }
 
@@ -256,7 +253,7 @@ class Document
         }
 
         if (\strtolower($type) === Document::TYPE_HTML) {
-            $string = Encoder::convertToHtmlEntities($string, $this->encoding);
+            $string = Encoder::convertToHtmlEntities($string, $this->encoding ?? 'UTF-8');
         }
 
         $this->type = \strtolower($type);
@@ -268,6 +265,7 @@ class Document
         } else {
             $load = $this->document->loadXml($string, $options);
         }
+
         $this->loadStatus = false === $load ? false : true;
 
         Errors::restore();
@@ -435,8 +433,8 @@ class Document
     public function single(string $expression, string $type = Query::TYPE_CSS, bool $wrapNode = true, $contextNode = null)
     {
         $els = $this->find($expression, $type, $wrapNode, $contextNode);
-
         $count = \count($els);
+
         if (0 === $count) {
             throw new \Exception(
                 \sprintf('Expected strictly one element for selector "%s", but found none.', $expression)
@@ -469,8 +467,8 @@ class Document
     public function singleOrNot(string $expression, string $type = Query::TYPE_CSS, bool $wrapNode = true, $contextNode = null)
     {
         $els = $this->find($expression, $type, $wrapNode, $contextNode);
-
         $count = \count($els);
+
         if (0 === $count) {
             return null;
         } elseif ($count > 1) {
@@ -603,7 +601,9 @@ class Document
      */
     public function html(): string
     {
-        return \trim($this->document->saveHTML($this->document));
+        $html = $this->document->saveHTML($this->document);
+
+        return \trim(\str_replace("\r\n", "\n", $html));
     }
 
     /**

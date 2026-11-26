@@ -57,8 +57,8 @@ class DocumentTest extends TestCase
     public function testCreateElement()
     {
         $html = $this->loadFixture('posts.html');
-
         $document = new Document($html, false);
+
         $element  = $document->createElement('span', 'value');
 
         $this->assertInstanceOf('DiDom\Element', $element);
@@ -144,7 +144,6 @@ class DocumentTest extends TestCase
         $this->expectExceptionMessage('Argument 1 passed to DiDom\Document::appendChild must be an instance of DiDom\Element or DOMNode, string given.');
 
         $html = $this->loadFixture('posts.html');
-
         $document = new Document($html);
 
         $document->appendChild('foo');
@@ -153,15 +152,15 @@ class DocumentTest extends TestCase
     public function testAppendChild()
     {
         $html = '<!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <title>Document</title>
-        </head>
-        <body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
 
-        </body>
-        </html>';
+</body>
+</html>';
 
         $document = new Document($html);
 
@@ -174,7 +173,6 @@ class DocumentTest extends TestCase
         $this->assertTrue($appendedChild->is($document->first('span')));
 
         $appendedChild->remove();
-
         $this->assertCount(0, $document->find('span'));
 
         $nodes = [];
@@ -199,7 +197,6 @@ class DocumentTest extends TestCase
         $this->expectExceptionMessage('Could not load file path/to/file.');
 
         $document = new Document();
-
         $document->load('path/to/file', true);
     }
 
@@ -209,26 +206,24 @@ class DocumentTest extends TestCase
         $this->expectExceptionMessage('Document type must be "xml" or "html", bar given.');
 
         $document = new Document();
-
         $document->load('foo', false, 'bar');
     }
 
     public function testLoadHtmlDocument()
     {
         $html = '
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <title>Document</title>
-            </head>
-            <body>
-                <div class="foo">Foo — Bar — Baz</div>
-            </body>
-            </html>
-        ';
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Document</title>
+</head>
+<body>
+    <div class="foo">Foo — Bar — Baz</div>
+</body>
+</html>
+';
 
         $document = new Document();
-
         $document->load($html, false, 'html');
 
         $this->assertEquals('Foo — Bar — Baz', $document->first('.foo')->text());
@@ -237,14 +232,13 @@ class DocumentTest extends TestCase
     public function testLoadXmlDocument()
     {
         $xml = '
-            <?xml version="1.0" encoding="UTF-8"?>
-            <root>
-                <foo>Foo — Bar — Baz</foo>
-            </root>
-        ';
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+    <foo>Foo — Bar — Baz</foo>
+</root>
+';
 
         $document = new Document();
-
         $document->load($xml, false, 'xml');
 
         $this->assertEquals('Foo — Bar — Baz', $document->first('foo')->text());
@@ -256,7 +250,6 @@ class DocumentTest extends TestCase
         $this->expectExceptionMessage('Could not load file path/to/file.');
 
         $document = new Document();
-
         $document->loadHtmlFile('path/to/file');
     }
 
@@ -266,7 +259,6 @@ class DocumentTest extends TestCase
         $this->expectExceptionMessage('Could not load file path/to/file.');
 
         $document = new Document();
-
         $document->loadXmlFile('path/to/file');
     }
 
@@ -328,11 +320,11 @@ class DocumentTest extends TestCase
         $html = $this->loadFixture('menu.html');
 
         $document = new Document($html);
+
         $texts = $document->find('//a/text()', Query::TYPE_XPATH);
 
         $this->assertTrue(is_array($texts));
         $this->assertEquals(3, count($texts));
-
         $this->assertEquals(['Link 1', 'Link 2', 'Link 3'], $texts);
     }
 
@@ -343,6 +335,7 @@ class DocumentTest extends TestCase
         $document = new Document($html);
 
         $comment = $document->xpath('/html/body/ul/li/a/comment()');
+
         $this->assertTrue($comment[0]->isCommentNode());
         $this->assertTrue($comment[1]->isCommentNode());
 
@@ -350,6 +343,7 @@ class DocumentTest extends TestCase
         $this->assertEquals(2, count($comment));
 
         $comment = $document->xpath('/html/body/comment()');
+
         $this->assertTrue($comment[0]->isCommentNode());
 
         $this->assertTrue(is_array($comment));
@@ -361,6 +355,7 @@ class DocumentTest extends TestCase
         $html = $this->loadFixture('menu.html');
 
         $document = new Document($html);
+
         $links = $document->find('//a/@href', Query::TYPE_XPATH);
 
         $this->assertTrue(is_array($links));
@@ -392,7 +387,6 @@ class DocumentTest extends TestCase
         $items = $document->find('ul > li');
 
         $this->assertEquals($items[0]->getNode(), $document->first('ul > li')->getNode());
-
         $this->assertEquals('One', $document->first('ul > li::text'));
 
         $document = new Document();
@@ -403,12 +397,11 @@ class DocumentTest extends TestCase
     public function testFirstWithContext()
     {
         $html = '
-            <div class="root">
-                <span>Foo</span>
-
-                <div><span>Bar</span></div>
-            </div>
-        ';
+<div class="root">
+    <span>Foo</span>
+    <div><span>Bar</span></div>
+</div>
+';
 
         $document = new Document($html);
 
@@ -425,6 +418,7 @@ class DocumentTest extends TestCase
         $html = $this->loadFixture('posts.html');
 
         $document = new Document($html, false);
+
         $elements = $document->xpath("//*[contains(concat(' ', normalize-space(@class), ' '), ' post ')]");
 
         $this->assertTrue(is_array($elements));
@@ -453,8 +447,7 @@ class DocumentTest extends TestCase
     public function testCreateXpath()
     {
         $document = new Document();
-
-        $xpath =$document->createXpath();
+        $xpath = $document->createXpath();
 
         $this->assertInstanceOf('DOMXPath', $xpath);
         $this->assertEquals($document->getDocument(), $xpath->document);
@@ -462,8 +455,7 @@ class DocumentTest extends TestCase
 
     public function testHtml()
     {
-        $html = '
-<!DOCTYPE html>
+        $html = '<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -475,15 +467,13 @@ English language <br>
 اللغة العربية <br>
 漢語 <br>
 Tiếng Việt <br>
-
 &lt; &gt;
 </body>
-</html>
-        ';
+</html>';
 
         $document = new Document($html);
 
-        $this->assertEquals(trim($html), $document->html());
+        $this->assertEquals(\trim(\str_replace("\r\n", "\n", $html)), $document->html());
     }
 
     public function testXml()
@@ -510,6 +500,7 @@ Tiếng Việt <br>
     public function testFormat()
     {
         $html = $this->loadFixture('posts.html');
+
         $document = new Document($html, false);
 
         $this->assertFalse($document->getDocument()->formatOutput);
@@ -522,6 +513,7 @@ Tiếng Việt <br>
     public function testText()
     {
         $html = '<html>foo</html>';
+
         $document = new Document($html, false);
 
         $this->assertEquals('foo', $document->text());
@@ -559,13 +551,10 @@ Tiếng Việt <br>
     public function testGetType()
     {
         // empty document
-
         $document = new Document();
-
         $this->assertNull($document->getType());
 
         // html
-
         $html = $this->loadFixture('posts.html');
 
         $document = new Document($html);
@@ -580,7 +569,6 @@ Tiếng Việt <br>
         $this->assertEquals('html', $document->getType());
 
         // xml
-
         $xml = $this->loadFixture('books.xml');
 
         $document = new Document($xml, false, 'UTF-8', 'xml');
@@ -598,12 +586,15 @@ Tiếng Việt <br>
     public function testGetEncoding()
     {
         $document = new Document();
-
         $this->assertEquals('UTF-8', $document->getEncoding());
 
         $document = new Document(null, false, 'CP-1251');
-
         $this->assertEquals('CP-1251', $document->getEncoding());
+
+        // encoding is null when constructed from DOMDocument
+        $domDocument = new DOMDocument();
+        $document = new Document($domDocument);
+        $this->assertNull($document->getEncoding());
     }
 
     public function testGetDocument()
@@ -627,7 +618,6 @@ Tiếng Việt <br>
         $this->expectException(RuntimeException::class);
 
         $document = new Document();
-
         $document->toElement();
     }
 
@@ -653,5 +643,83 @@ Tiếng Việt <br>
         $document = new Document($xml, false, 'UTF-8', 'xml');
 
         $this->assertEquals($document->xml(), $document->__toString());
+    }
+
+    // =========================
+    // loadStatus tests
+    // =========================
+
+    public function testLoadStatusWithEmptyDocument()
+    {
+        $document = new Document();
+        $this->assertFalse($document->loadStatus());
+    }
+
+    public function testLoadStatusAfterSuccessfulHtmlLoad()
+    {
+        $document = new Document();
+        $this->assertFalse($document->loadStatus());
+
+        $document->loadHtml('<html><body><p>Hello</p></body></html>');
+        $this->assertTrue($document->loadStatus());
+    }
+
+    public function testLoadStatusAfterSuccessfulXmlLoad()
+    {
+        $document = new Document();
+        $this->assertFalse($document->loadStatus());
+
+        $document->loadXml('<?xml version="1.0"?><root><item>Test</item></root>');
+        $this->assertTrue($document->loadStatus());
+    }
+
+    public function testLoadStatusAfterFailedXmlLoad()
+    {
+        $document = new Document();
+        $this->assertFalse($document->loadStatus());
+
+        $document->loadXml('this is not valid xml <<<<>>>');
+        $this->assertFalse($document->loadStatus());
+    }
+
+    public function testLoadStatusWithValidHtmlInConstructor()
+    {
+        $document = new Document('<html><body>Test</body></html>');
+        $this->assertTrue($document->loadStatus());
+    }
+
+    public function testLoadStatusWithValidXmlInConstructor()
+    {
+        $document = new Document('<?xml version="1.0"?><root/>', false, 'UTF-8', Document::TYPE_XML);
+        $this->assertTrue($document->loadStatus());
+    }
+
+    public function testLoadStatusWithDomDocumentWithContent()
+    {
+        $domDocument = new DOMDocument();
+        $domDocument->loadHTML('<html><body>Test</body></html>');
+
+        $document = new Document($domDocument);
+        $this->assertTrue($document->loadStatus());
+    }
+
+    public function testLoadStatusWithEmptyDomDocument()
+    {
+        $domDocument = new DOMDocument();
+
+        $document = new Document($domDocument);
+        $this->assertFalse($document->loadStatus());
+    }
+
+    public function testLoadStatusAfterReload()
+    {
+        $document = new Document('<html><body>First</body></html>');
+        $this->assertTrue($document->loadStatus());
+
+        $document->loadXml('invalid xml <<<<>>>');
+        $this->assertFalse($document->loadStatus());
+
+        $document->loadHtml('<html><body>Second</body></html>');
+        $this->assertTrue($document->loadStatus());
     }
 }

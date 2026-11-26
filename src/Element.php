@@ -17,8 +17,9 @@ use RuntimeException;
 
 class Element extends Node
 {
-    protected ClassAttribute $classAttribute;
-    protected StyleAttribute $styleAttribute;
+    protected ?ClassAttribute $classAttribute = null;
+
+    protected ?StyleAttribute $styleAttribute = null;
 
     /**
      * @param DOMElement|DOMText|DOMComment|DOMCdataSection|string $tagName The tag name of an element
@@ -29,7 +30,6 @@ class Element extends Node
     {
         if (\is_string($tagName)) {
             $document = new DOMDocument('1.0', 'UTF-8');
-
             $node = $document->createElement($tagName);
 
             $this->setNode($node);
@@ -100,11 +100,9 @@ class Element extends Node
         if (! $strict) {
             $innerHtml = $this->html();
             $html = "<root>$innerHtml</root>";
-
             $selector = 'root > ' . \trim($selector);
 
             $document = new Document();
-
             $document->loadHtml($html, LIBXML_HTML_NODEFDTD | LIBXML_HTML_NOIMPLIED);
 
             return $document->has($selector);
@@ -127,7 +125,6 @@ class Element extends Node
         }
 
         $classes = $this->hasAttribute('class') ? \explode(' ', \trim($this->getAttribute('class'))) : [];
-
         $segments['classes'] = \array_key_exists('classes', $segments) ? $segments['classes'] : [];
 
         $diff1 = \array_diff($segments['classes'], $classes);
